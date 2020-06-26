@@ -25,7 +25,6 @@ wss.on('connection', function connection(ws) {
   ws.send('something')
 })
 server.post('/api/login', async (request, reply) => {
-  console.log(await login(request, reply, db))
   reply.send(await login(request, reply, db))
 })
 server.listen(port, (err, address) => {
