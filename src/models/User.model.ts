@@ -66,11 +66,11 @@ UserSchema.methods.generateJWT = async function () {
     config.secret
   )
 }
-UserSchema.methods.toAuthJSON = function () {
+UserSchema.methods.toAuthJSON = async function () {
   return {
     user_id: this.user_id,
     email: this.email,
-    token: this.generateJWT()
+    token: await this.generateJWT()
   }
 }
 export interface IUserSchema extends Document {
@@ -82,6 +82,8 @@ export interface IUserSchema extends Document {
   pub_key: string
   user_id: string
   chats: Array<IChatSchema>
+  validatePassword: any
+  toAuthJSON: any
 }
 const User = mongoose.model<IUserSchema>('User', UserSchema)
 export default User

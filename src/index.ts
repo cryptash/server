@@ -1,8 +1,8 @@
 import fastify from 'fastify'
 import ws from 'ws'
 import mongoose from 'mongoose'
+import login from './api/login'
 import * as config from './config.json'
-import User from './models/User.model'
 const port: number = config.port || 8080
 mongoose.connect(`${config.db_host}/${config.db_name}`, {
   pass: config.db_pass,
@@ -24,10 +24,10 @@ wss.on('connection', function connection(ws) {
   })
   ws.send('something')
 })
-server.get('api/login', async (request, reply) => {
-  return 'pong\n'
+server.post('/api/login', async (request, reply) => {
+  console.log(await login(request, reply, db))
+  reply.send(await login(request, reply, db))
 })
-
 server.listen(port, (err, address) => {
   if (err) {
     console.error(err)
