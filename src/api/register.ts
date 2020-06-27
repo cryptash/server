@@ -17,10 +17,11 @@ const Register = async (req: any, res: any, db: Connection) => {
     pub_key: req.body.pub_key,
     created_at: new Date()
   })
-  return user.save(function (err) {
-    if (err) return console.log(err)
-    console.log('Saved', user)
-    return { 200: { jwt: user.toAuthJSON() } }
-  })
+  try {
+    await user.save()
+  } catch (e) {
+    if (e) return console.log(e)
+  }
+  return { 200: user.toAuthJSON() }
 }
 export default Register
