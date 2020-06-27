@@ -4,7 +4,7 @@ const Login = async (req: any, res: any, db: Connection) => {
   const user = await User.findOne({ username: req.body.username })
   console.log(user)
   if (!user) {
-    return { 403: { text: 'No user found' } }
+    return { 400: { text: 'No user found' } }
   }
   if (!user.validatePassword(req.body.password))
     return { 403: { text: 'Wrong password' } }
