@@ -20,16 +20,13 @@ export const UserSchema = new Schema({
     required: true
   },
   last_fetched: {
-    type: Date,
-    required: true
+    type: Date
   },
   notified: {
-    type: Boolean,
-    required: true
+    type: Boolean
   },
   user_id: {
-    type: String,
-    required: true
+    type: String
   },
   pub_key: {
     type: String,
@@ -40,37 +37,38 @@ export const UserSchema = new Schema({
     required: true
   }
 })
-
-UserSchema.methods.updatePassword = async function (
+UserSchema.methods.setPassword = function (pass: string) {
+  this.password = bcrypt.hashSync(pass, 10)
+}
+UserSchema.methods.updatePassword = function (
   new_pass: string,
   old_pass: string
 ) {
   if (!this.validatePassword(old_pass)) return 403
-  this.password = await bcrypt.hash(new_pass, 20)
+  this.password = bcrypt.hashSync(new_pass, 10)
   return 200
 }
-UserSchema.methods.validatePassword = async function (pass: string) {
-  return await bcrypt.compare(pass, this.password)
+UserSchema.methods.validatePassword = function (pass: string) {
+  return bcrypt.compareSync(pass, this.password)
 }
-UserSchema.methods.generateJWT = async function () {
+UserSchema.methods.generateJWT = function () {
   const today = new Date()
   const expirationDate = new Date(today)
   expirationDate.setDate(today.getDate() + 60)
 
   return jwt.sign(
     {
-      email: this.email,
-      id: this.user_id,
+      username: this.username,
+      user_id: this.user_id,
       exp: parseInt((expirationDate.getTime() / 1000).toString(), 10)
     },
     config.secret
   )
 }
-UserSchema.methods.toAuthJSON = async function () {
+UserSchema.methods.toAuthJSON = function () {
   return {
     user_id: this.user_id,
-    email: this.email,
-    token: await this.generateJWT()
+    token: this.generateJWT()
   }
 }
 export interface IUserSchema extends Document {
