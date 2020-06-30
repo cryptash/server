@@ -8,6 +8,6 @@ const Login = async (req: any, res: any, db: Connection) => {
   }
   if (!user.validatePassword(req.body.password))
     return { 403: { text: 'Wrong password' } }
-  else return { 200: { jwt: user.toAuthJSON() } }
+  else return { 200: user.toAuthJSON() }
 }
 export default Login
