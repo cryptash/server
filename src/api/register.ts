@@ -2,7 +2,7 @@ import User from '../models/User.model'
 import bcrypt from 'bcrypt'
 import nanoid from 'nanoid'
 import { Connection } from 'mongoose'
-const Register = async (req: any, res: any, db: Connection) => {
+const Register = async (req: any, res: any) => {
   console.log(req.body)
   let pass_regexp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,31}$/ // 8 to 31 characters which contain at least one lowercase letter, one uppercase letter, one numeric digit, and one special character
   if (!req.body.password.match(pass_regexp))
