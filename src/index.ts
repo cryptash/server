@@ -1,27 +1,25 @@
 import fastify from 'fastify'
 import ws from 'ws'
 import jwt from 'jsonwebtoken'
-import mongoose from 'mongoose'
+// import mongoose from 'mongoose'
+import pg from 'pg'
 import Login from './api/login'
 import * as config from './config.json'
 import SendMessage from './api/messages/send'
 import getKey from './api/getKey'
 import Register from './api/register'
+// const conString = `postgres://${config.db_user}:${config.db_pass}@${config.db_host}/${config.db_name}`
+const client = new pg.Client({
+  user: config.db_user,
+  host: config.db_host,
+  database: config.db_name,
+  password: config.db_pass
+})
+client.connect()
 
+console.log(client)
 const port: number = config.port || 8080
 const clients: any = { server: { server: true } }
-mongoose.connect(`${config.db_host}/${config.db_name}`, {
-  pass: config.db_pass,
-  user: config.db_user,
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true
-})
-const db = mongoose.connection
-db.on('error', console.error.bind(console, 'connection error:'))
-db.once('open', async function () {
-  console.log('connected')
-})
 const server = fastify()
 const wss = new ws.Server({ server: server.server })
 wss.on('connection', function connection(ws: any) {
@@ -63,13 +61,13 @@ const interval = setInterval(function ping() {
   })
 }, 15000)
 server.post('/api/login', async (request, reply) => {
-  reply.send(await Login(request, reply, db))
+  reply.send(await Login(request, reply))
 })
 server.post('/api/register', async (request, reply) => {
-  reply.send(await Register(request, reply, db))
+  reply.send(await Register(request, reply))
 })
 server.post('/api/getKey', async (request, reply) => {
-  reply.send(await getKey(request, reply, db))
+  reply.send(await getKey(request, reply))
 })
 server.listen(port, (err, address) => {
   if (err) {
