@@ -3,21 +3,22 @@ import ws from 'ws'
 import jwt from 'jsonwebtoken'
 // import mongoose from 'mongoose'
 import pg from 'pg'
+import connection from './lib/db_connect'
 import Login from './api/login'
 import * as config from './config.json'
 import SendMessage from './api/messages/send'
 import getKey from './api/getKey'
 import Register from './api/register'
 // const conString = `postgres://${config.db_user}:${config.db_pass}@${config.db_host}/${config.db_name}`
-const client = new pg.Client({
-  user: config.db_user,
-  host: config.db_host,
-  database: config.db_name,
-  password: config.db_pass
-})
-client.connect()
-
-console.log(client)
+// const client = new pg.Client({
+//   user: config.db_user,
+//   host: config.db_host,
+//   database: config.db_name,
+//   password: config.db_pass
+// })
+// client.connect()
+connection.sync()
+console.log(connection)
 const port: number = config.port || 8080
 const clients: any = { server: { server: true } }
 const server = fastify()
