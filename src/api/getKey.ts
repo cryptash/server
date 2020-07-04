@@ -1,4 +1,3 @@
-import { Connection } from 'mongoose'
 import jwt from 'jsonwebtoken'
 import * as config from '../config.json'
 import User from '../models/User.model'

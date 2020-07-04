@@ -1,10 +1,7 @@
-// import { Document, Model, model, Types, Schema, Query } from 'mongoose'
-// import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
-import { Model, DataTypes, Sequelize, Optional } from 'sequelize'
+import { Model, DataTypes } from 'sequelize'
 import jwt from 'jsonwebtoken'
 import * as config from '../config.json'
-// import { IChatSchema } from './Chat.model'
 import sequelize from '../lib/db_connect'
 class User extends Model {
   username!: string
@@ -34,39 +31,6 @@ User.init(
   },
   { tableName: 'Users', sequelize }
 )
-// export const UserSchema = new Schema({
-//   username: {
-//     type: String,
-//     unique: true,
-//     required: true,
-//     lowercase: true
-//   },
-//   password: {
-//     type: String,
-//     required: true
-//   },
-//   created_at: {
-//     type: Date,
-//     required: true
-//   },
-//   last_fetched: {
-//     type: Date
-//   },
-//   notified: {
-//     type: Boolean
-//   },
-//   user_id: {
-//     type: String
-//   },
-//   pub_key: {
-//     type: String,
-//     required: true
-//   },
-//   chats: {
-//     type: Array,
-//     required: true
-//   }
-// })
 User.prototype.setPassword = function (pass: string) {
   this.password = bcrypt.hashSync(pass, 10)
 }
@@ -99,5 +63,4 @@ User.prototype.toAuthJSON = function () {
   }
 }
 
-// const User = mongoose.model<IUserSchema>('User', UserSchema)
 export default User
