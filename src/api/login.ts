@@ -1,5 +1,4 @@
 import User from '../models/User.model'
-import { Connection } from 'mongoose'
 const Login = async (req: any, res: any) => {
   const user = await User.findOne({ where: { username: req.body.username } })
   console.log(user)
