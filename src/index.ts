@@ -6,12 +6,16 @@ import Login from './api/login'
 import * as config from './config.json'
 import SendMessage from './api/messages/send'
 import getKey from './api/getKey'
+import fastifyCors from 'fastify-cors'
 import Register from './api/register'
 connection.sync()
 console.log(connection)
 const port: number = config.port || 8080
 const clients: any = { server: { server: true } }
 const server = fastify()
+server.register(fastifyCors, {
+  origin: '*'
+})
 const wss = new ws.Server({ server: server.server })
 wss.on('connection', function connection(ws: any) {
   console.log('new connection')
