@@ -24,12 +24,29 @@ wss.on('connection', function connection(ws: any) {
     message = JSON.parse(message)
     if (message.action === 'register') {
       token = jwt.verify(message.jwt, config.secret)
-      if (!token) ws.send(JSON.stringify({ 401: 'Invalid token' }))
+      if (!token)
+        ws.send(
+          JSON.stringify({
+            statusCode: 401,
+            error: 'Unauthorized',
+            message: 'Invalid token'
+          })
+        )
       clients[token.user_id] = {
         user_id: token.user_id,
         connection: ws,
         isAlive: true
       }
+      ws.send(
+        JSON.stringify({
+          action: 'info',
+          data: {
+            statusCode: 200,
+            user_id: token.user_id,
+            message: 'Succesfull connection'
+          }
+        })
+      )
       console.log(clients)
     }
     if (message.action === 'send_message') {
