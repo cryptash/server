@@ -11,6 +11,7 @@ class User extends Model {
   last_fetched!: Date
   pub_key!: string
   user_id!: string
+  picture_url!: string
   chats!: string[]
   toAuthJSON!: () => { user_id: string; token: string }
   generateJWT!: () => string
@@ -26,6 +27,7 @@ User.init(
     created_at: DataTypes.TEXT,
     last_fetched: DataTypes.TEXT,
     pub_key: DataTypes.TEXT,
+    picture_url: DataTypes.TEXT,
     user_id: DataTypes.TEXT,
     chats: DataTypes.ARRAY(DataTypes.TEXT)
   },

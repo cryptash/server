@@ -24,7 +24,9 @@ const Register = async (req: any, res: any) => {
     pub_key: req.body.pub_key,
     created_at: new Date().toString(),
     last_fetched: new Date().toString(),
-    notified: true
+    notified: true,
+    picture_url:
+      'https://img.techpowerup.org/200709/22-223863-no-avatar-png-circle-transparent-png.png'
   })
   try {
     await user.save()
