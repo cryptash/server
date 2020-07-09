@@ -8,8 +8,9 @@ import SendMessage from './api/messages/send'
 import getKey from './api/getKey'
 import fastifyCors from 'fastify-cors'
 import Register from './api/register'
+import searchUsers from './api/searchUsers'
+import { request } from 'http'
 connection.sync()
-console.log(connection)
 const port: number = config.port || 8080
 const clients: any = { server: { server: true } }
 const server = fastify()
@@ -80,6 +81,9 @@ server.post('/api/register', async (request, reply) => {
 })
 server.post('/api/getKey', async (request, reply) => {
   reply.send(await getKey(request, reply))
+})
+server.post('/api/searchUsers', async (request, reply) => {
+  reply.send(await searchUsers(request))
 })
 server.listen(port, (err, address) => {
   if (err) {
