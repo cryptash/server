@@ -9,7 +9,8 @@ import getKey from './api/getKey'
 import fastifyCors from 'fastify-cors'
 import Register from './api/register'
 import searchUsers from './api/searchUsers'
-import { request } from 'http'
+import checkAuth from './api/checkAuth'
+import getUserInfo from './api/user/getUserInfo'
 connection.sync()
 const port: number = config.port || 8080
 const clients: any = { server: { server: true } }
@@ -44,7 +45,7 @@ wss.on('connection', function connection(ws: any) {
           data: {
             statusCode: 200,
             user_id: token.user_id,
-            message: 'Succesfull connection'
+            message: 'Successful connection'
           }
         })
       )
@@ -64,7 +65,7 @@ const interval = setInterval(function ping() {
   Object.keys(clients).map((key) => {
     const ws = clients[key]
     if (ws.server) return
-    if (ws.isAlive === false) {
+    if (!ws.isAlive) {
       ws.connection.terminate()
       delete clients[ws.user_id]
       return
@@ -73,18 +74,60 @@ const interval = setInterval(function ping() {
     ws.connection.ping()
   })
 }, 15000)
-server.post('/api/login', async (request, reply) => {
-  reply.send(await Login(request, reply))
-})
-server.post('/api/register', async (request, reply) => {
-  reply.send(await Register(request, reply))
-})
-server.post('/api/getKey', async (request, reply) => {
-  reply.send(await getKey(request, reply))
-})
-server.post('/api/searchUsers', async (request, reply) => {
-  reply.send(await searchUsers(request))
-})
+server.post(
+  '/api/login',
+  async (
+    request: fastify.FastifyRequest,
+    reply: fastify.FastifyReply<object>
+  ) => {
+    await Login(request, reply)
+  }
+)
+server.post(
+    '/api/register',
+    async (
+        request: fastify.FastifyRequest,
+        reply: fastify.FastifyReply<object>
+    ) => {
+      await Register(request, reply)
+    }
+)
+server.post(
+    '/api/users/getKey',
+    async (
+        request: fastify.FastifyRequest,
+        reply: fastify.FastifyReply<object>
+    ) => {
+      await getKey(request, reply)
+    }
+)
+server.post(
+    '/api/users/search',
+    async (
+        request: fastify.FastifyRequest,
+        reply: fastify.FastifyReply<object>
+    ) => {
+      await searchUsers(request, reply)
+    }
+)
+server.post(
+    '/api/checkAuth',
+    async (
+        request: fastify.FastifyRequest,
+        reply: fastify.FastifyReply<object>
+    ) => {
+      await checkAuth(request, reply)
+    }
+)
+server.post(
+    '/api/users/getInfo',
+    async (
+        request: fastify.FastifyRequest,
+        reply: fastify.FastifyReply<object>
+    ) => {
+      await getUserInfo(request, reply)
+    }
+)
 server.listen(port, (err, address) => {
   if (err) {
     console.error(err)
