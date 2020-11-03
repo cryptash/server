@@ -14,13 +14,14 @@ class Chat extends Model {
       }>
   }>
   users!: Array<{
-    id: string
+    id: string,
+    content: string
   }>
 }
 Chat.init(
   {
     chat_id: DataTypes.TEXT,
-    messages: DataTypes.ARRAY(DataTypes.TEXT),
+    messages: DataTypes.ARRAY(DataTypes.JSON),
     users: DataTypes.TEXT,
   },
   { tableName: 'Chats', sequelize }
