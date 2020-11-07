@@ -11,6 +11,7 @@ import Register from './api/register'
 import searchUsers from './api/searchUsers'
 import checkAuth from './api/checkAuth'
 import getUserInfo from './api/user/getUserInfo'
+import createChat from "./api/chat/createChat";
 connection.sync()
 const port: number = config.port || 8080
 const clients: any = { server: { server: true } }
@@ -53,7 +54,7 @@ wss.on('connection', function connection(ws: any) {
     }
     if (message.action === 'send_message') {
       delete message.action
-      SendMessage(clients, message)
+      SendMessage(message, clients)
     }
   })
   ws.on('pong', function () {
@@ -126,6 +127,15 @@ server.post(
         reply: fastify.FastifyReply<object>
     ) => {
       await getUserInfo(request, reply)
+    }
+)
+server.post(
+    '/api/chat/create',
+    async (
+        request: fastify.FastifyRequest,
+        reply: fastify.FastifyReply<object>
+    ) => {
+      await createChat(request, reply)
     }
 )
 server.listen(port, (err, address) => {

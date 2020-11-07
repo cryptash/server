@@ -3,6 +3,7 @@ import { Model, DataTypes } from 'sequelize'
 import jwt from 'jsonwebtoken'
 import * as config from '../config.json'
 import sequelize from '../lib/db_connect'
+import Chat from "./Chat.model";
 class User extends Model {
   username!: string
   password!: string
@@ -12,7 +13,6 @@ class User extends Model {
   pub_key!: string
   user_id!: string
   picture_url!: string
-  chats!: string[]
   toAuthJSON!: () => { user_id: string; token: string }
   generateJWT!: () => string
   validatePassword!: (pass: string) => boolean
@@ -29,7 +29,6 @@ User.init(
     pub_key: DataTypes.TEXT,
     picture_url: DataTypes.TEXT,
     user_id: DataTypes.TEXT,
-    chats: DataTypes.ARRAY(DataTypes.TEXT)
   },
   { tableName: 'Users', sequelize }
 )

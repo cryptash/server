@@ -1,29 +1,23 @@
 import { Model, DataTypes } from 'sequelize'
-import jwt from 'jsonwebtoken'
-import * as config from '../config.json'
 import sequelize from '../lib/db_connect'
+import User from "./User.model";
+
 class Chat extends Model {
   chat_id!: string
-  messages!: Array<{
-      id: string,
-      content: string,
-      date: string,
-      by: string,
-      attachments: Array<{
-          url: string,
-      }>
-  }>
-  users!: Array<{
-    id: string,
-    content: string
-  }>
+  users!: Array<string>
 }
 Chat.init(
   {
     chat_id: DataTypes.TEXT,
-    messages: DataTypes.ARRAY(DataTypes.JSON),
-    users: DataTypes.TEXT,
+    users: DataTypes.ARRAY(DataTypes.TEXT),
   },
   { tableName: 'Chats', sequelize }
 )
+// Chat.hasMany(Message)
+Chat.belongsToMany(User, {
+  through: 'ChatUsers'
+})
+User.belongsToMany(Chat, {
+  through: 'ChatUsers'
+})
 export default Chat
