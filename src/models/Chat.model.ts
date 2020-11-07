@@ -1,10 +1,25 @@
-import { Model, DataTypes } from 'sequelize'
+import {
+  Model,
+  DataTypes,
+  HasManyGetAssociationsMixin,
+  Association,
+  HasManyAddAssociationMixin,
+  HasManyHasAssociationMixin
+} from 'sequelize'
 import sequelize from '../lib/db_connect'
 import User from "./User.model";
+import Message from "./Message.model";
 
 class Chat extends Model {
   chat_id!: string
   users!: Array<string>
+  messages!: Array<Message>;
+  public getMessages!: HasManyGetAssociationsMixin<Message>
+  public addMessages!: HasManyAddAssociationMixin<Message, number>;
+  public hasMessages!: HasManyHasAssociationMixin<Message, number>;
+  public static associations: {
+    projects: Association<Chat, Message>;
+  };
 }
 Chat.init(
   {

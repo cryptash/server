@@ -18,6 +18,7 @@ class User extends Model {
   validatePassword!: (pass: string) => boolean
   updatePassword!: (new_pass: string, old_pass: string) => 200 | 403
   setPassword!: (pass: string) => void
+  Chats!: Chat[]
 }
 User.init(
   {

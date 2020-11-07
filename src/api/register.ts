@@ -2,6 +2,7 @@ import User from '../models/User.model'
 import bcrypt from 'bcrypt'
 import nanoid from 'nanoid'
 import fastify from "fastify";
+import {randomGradient} from "../lib/randomGradient";
 const Register = async (req: fastify.FastifyRequest, res: fastify.FastifyReply<object>) => {
   console.log(req.body)
   let pass_regexp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,31}$/ // 8 to 31 characters which contain at least one lowercase letter, one uppercase letter, one numeric digit, and one special character
@@ -30,8 +31,7 @@ const Register = async (req: fastify.FastifyRequest, res: fastify.FastifyReply<o
     created_at: new Date().toString(),
     last_fetched: new Date().toString(),
     notified: true,
-    picture_url:
-      'https://img.techpowerup.org/200709/22-223863-no-avatar-png-circle-transparent-png.png'
+    picture_url: randomGradient()
   })
   try {
     await user.save()

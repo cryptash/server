@@ -5,6 +5,7 @@ import fastify from "fastify";
 import Chat from "../../models/Chat.model";
 import jwt from "jsonwebtoken";
 import * as config from "../../config.json";
+import {literal, Op} from "sequelize";
 
 const createChat = async (req: fastify.FastifyRequest, res: fastify.FastifyReply<object>) => {
     console.log(req.body)
@@ -25,8 +26,17 @@ const createChat = async (req: fastify.FastifyRequest, res: fastify.FastifyReply
         })
         return
     }
-    const chats = await Chat.findAll()
-    console.log(chats)
+    // if (await Chat.findOne({
+    //     where: {
+    //         users: [Op.contains]: [req.body.user_id,token.user_id],
+    //     }
+    // })) {
+    //     res.status(409).send({
+    //         statusCode: 409,
+    //         error: 'Conflict',
+    //         message: 'Chat already exists'
+    //     })
+    // }
     const user1 = await User.findOne({
         where: {
             user_id: token.user_id
