@@ -11,7 +11,7 @@ import Register from './api/register'
 import searchUsers from './api/searchUsers'
 import checkAuth from './api/checkAuth'
 import getUserInfo from './api/user/getUserInfo'
-import createChat from "./api/chat/createChat";
+import createChat from './api/chat/createChat'
 connection.sync()
 const port: number = config.port || 8080
 const clients: any = { server: { server: true } }
@@ -54,7 +54,7 @@ wss.on('connection', function connection(ws: any) {
     }
     if (message.action === 'send_message') {
       delete message.action
-      SendMessage(message, clients)
+      await SendMessage(message, clients)
     }
   })
   ws.on('pong', function () {
@@ -85,58 +85,58 @@ server.post(
   }
 )
 server.post(
-    '/api/register',
-    async (
-        request: fastify.FastifyRequest,
-        reply: fastify.FastifyReply<object>
-    ) => {
-      await Register(request, reply)
-    }
+  '/api/register',
+  async (
+    request: fastify.FastifyRequest,
+    reply: fastify.FastifyReply<object>
+  ) => {
+    await Register(request, reply)
+  }
 )
 server.post(
-    '/api/users/getKey',
-    async (
-        request: fastify.FastifyRequest,
-        reply: fastify.FastifyReply<object>
-    ) => {
-      await getKey(request, reply)
-    }
+  '/api/users/getKey',
+  async (
+    request: fastify.FastifyRequest,
+    reply: fastify.FastifyReply<object>
+  ) => {
+    await getKey(request, reply)
+  }
 )
 server.post(
-    '/api/users/search',
-    async (
-        request: fastify.FastifyRequest,
-        reply: fastify.FastifyReply<object>
-    ) => {
-      await searchUsers(request, reply)
-    }
+  '/api/users/search',
+  async (
+    request: fastify.FastifyRequest,
+    reply: fastify.FastifyReply<object>
+  ) => {
+    await searchUsers(request, reply)
+  }
 )
 server.post(
-    '/api/checkAuth',
-    async (
-        request: fastify.FastifyRequest,
-        reply: fastify.FastifyReply<object>
-    ) => {
-      await checkAuth(request, reply)
-    }
+  '/api/checkAuth',
+  async (
+    request: fastify.FastifyRequest,
+    reply: fastify.FastifyReply<object>
+  ) => {
+    await checkAuth(request, reply)
+  }
 )
 server.post(
-    '/api/users/getInfo',
-    async (
-        request: fastify.FastifyRequest,
-        reply: fastify.FastifyReply<object>
-    ) => {
-      await getUserInfo(request, reply)
-    }
+  '/api/users/getInfo',
+  async (
+    request: fastify.FastifyRequest,
+    reply: fastify.FastifyReply<object>
+  ) => {
+    await getUserInfo(request, reply)
+  }
 )
 server.post(
-    '/api/chat/create',
-    async (
-        request: fastify.FastifyRequest,
-        reply: fastify.FastifyReply<object>
-    ) => {
-      await createChat(request, reply)
-    }
+  '/api/chat/create',
+  async (
+    request: fastify.FastifyRequest,
+    reply: fastify.FastifyReply<object>
+  ) => {
+    await createChat(request, reply)
+  }
 )
 server.listen(port, (err, address) => {
   if (err) {

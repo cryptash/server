@@ -4,7 +4,9 @@ const Login = async (req: FastifyRequest, res: FastifyReply<object>) => {
   const user = await User.findOne({ where: { username: req.body.username } })
   console.log(user)
   if (!user) {
-    res.status(400).send({ statusCode: 400, error: 'Bad request', message: 'No user found' })
+    res
+      .status(400)
+      .send({ statusCode: 400, error: 'Bad request', message: 'No user found' })
     return
   }
   if (!user.validatePassword(req.body.password)) {
@@ -13,9 +15,8 @@ const Login = async (req: FastifyRequest, res: FastifyReply<object>) => {
       error: 'Unauthorized',
       message: 'Wrong password'
     })
-      return
-  }
-  else {
+    return
+  } else {
     res.status(200).send({
       statusCode: 200,
       ...user.toAuthJSON()

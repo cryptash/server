@@ -2,7 +2,7 @@ import User from '../models/User.model'
 import sequelize from 'sequelize'
 import jwt from 'jsonwebtoken'
 import * as config from '../config.json'
-import {FastifyReply, FastifyRequest} from "fastify";
+import { FastifyReply, FastifyRequest } from 'fastify'
 
 const searchUsers = async (req: FastifyRequest, res: FastifyReply<object>) => {
   console.log(req)
@@ -51,7 +51,9 @@ const searchUsers = async (req: FastifyRequest, res: FastifyReply<object>) => {
       picture_url: user.picture_url
     })
   })
-  res.status(200).send({ statusCode: 200, data: { users: result, count: result.length } })
+  res
+    .status(200)
+    .send({ statusCode: 200, data: { users: result, count: result.length } })
   return
 }
 export default searchUsers

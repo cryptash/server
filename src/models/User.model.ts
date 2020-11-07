@@ -3,7 +3,7 @@ import { Model, DataTypes } from 'sequelize'
 import jwt from 'jsonwebtoken'
 import * as config from '../config.json'
 import sequelize from '../lib/db_connect'
-import Chat from "./Chat.model";
+import Chat from './Chat.model'
 class User extends Model {
   username!: string
   password!: string
@@ -29,7 +29,7 @@ User.init(
     last_fetched: DataTypes.TEXT,
     pub_key: DataTypes.TEXT,
     picture_url: DataTypes.TEXT,
-    user_id: DataTypes.TEXT,
+    user_id: DataTypes.TEXT
   },
   { tableName: 'Users', sequelize }
 )

@@ -1,11 +1,11 @@
 import jwt from 'jsonwebtoken'
 import * as config from '../config.json'
 import User from '../models/User.model'
-import {FastifyReply} from "fastify";
+import { FastifyReply } from 'fastify'
 const getKey = async (req: any, res: FastifyReply<object>) => {
   console.log(req.body)
   const token = jwt.verify(req.headers.authorization, config.secret)
-  if (!token){
+  if (!token) {
     res.status(401).send({
       statusCode: 401,
       error: 'Unauthorized',
@@ -28,7 +28,9 @@ const getKey = async (req: any, res: FastifyReply<object>) => {
   })
   console.log(user)
   if (!user) {
-    res.status(404).send({statusCode: 404, error: 'Not found', message: 'No user found'})
+    res
+      .status(404)
+      .send({ statusCode: 404, error: 'Not found', message: 'No user found' })
     return
   }
   res.status(200).send({ statusCode: 200, key: user.pub_key })
