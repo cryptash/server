@@ -3,15 +3,11 @@ import * as config from '../../config.json'
 import User from '../../models/User.model'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import Chat from '../../models/Chat.model'
-import SendMessage from '../messages/send'
 import Message from '../../models/Message.model'
-import { Op } from 'sequelize'
+import {literal, Op} from 'sequelize'
 
 const getUserInfo = async (req: FastifyRequest, res: FastifyReply<any>) => {
-  console.log(req.body)
   const token: any = jwt.verify(req.headers.authorization, config.secret)
-  let { user_id } = req.body
-  console.log(token)
   if (!token) {
     res.status(401).send({
       statusCode: 401,
@@ -29,6 +25,7 @@ const getUserInfo = async (req: FastifyRequest, res: FastifyReply<any>) => {
         {
           model: Chat,
           required: false,
+          order: [[literal('`updatedAt`'), 'DESC']],
           attributes: {
             exclude: []
           },
@@ -49,7 +46,6 @@ const getUserInfo = async (req: FastifyRequest, res: FastifyReply<any>) => {
               }
             }
           ],
-          order: [['messageAt', 'DESC']]
         }
       ]
     })

@@ -37,56 +37,63 @@ const SendMessage = async (
   if (typeof chat.users === 'string') {
     console.log()
   }
-  const msg = new MessageModel({
-    chat_id: chat?.chat_id,
-    from: token.user_id,
-    to: users.filter((x: string) => x !== token.user_id)[0],
-    content: message.content,
-    read: false,
-    date: new Date(),
-    message_id: nanoid(21)
-  })
-  console.log(msg)
-  try {
-    await msg.save()
-  } catch (e) {
-    console.log('save')
-    console.log(e)
+  if (typeof users !== "string") {
+    const msg = new MessageModel({
+      chat_id: chat?.chat_id,
+      from: token.user_id,
+      to: users.filter((x: string) => x !== token.user_id)[0],
+      content: message.content,
+      read: false,
+      date: new Date(),
+      message_id: nanoid(21)
+    })
+    console.log(msg)
+    try {
+      await msg.save()
+    } catch (e) {
+      console.log('save')
+      console.log(e)
+    }
+    try {
+      await chat.save()
+      // @ts-ignore
+      chat.addMessage(msg)
+    } catch (e) {
+      console.log('msg')
+      console.log(e)
+    }
+    try {
+      // @ts-ignore
+      msg.dataValues.isMe = false
+      ws_clients[msg.to].connection.send(
+          JSON.stringify({
+            action: 'new_message',
+            data: {
+              statusCode: 200,
+              message: msg
+            }
+          })
+      )
+    } catch (e) {
+      console.log(e)
+    }
+    try {
+      // @ts-ignore
+      msg.dataValues.isMe = true
+      ws_clients[msg.from].connection.send(
+          JSON.stringify({
+            action: 'new_message',
+            data: {
+              statusCode: 200,
+              message: msg
+            }
+          })
+      )
+    } catch (e) {
+      console.log(e)
+    }
+    return msg
   }
-  try {
-    await chat.save()
-    // @ts-ignore
-    chat.addMessage(msg)
-  } catch (e) {
-    console.log('msg')
-    console.log(e)
-  }
-  try {
-    ws_clients[msg.to].connection.send(
-      JSON.stringify({
-        action: 'new_message',
-        data: {
-          statusCode: 200,
-          message: msg
-        }
-      })
-    )
-  } catch (e) {
-    console.log(e)
-  }
-  try {
-    ws_clients[msg.from].connection.send(
-      JSON.stringify({
-        action: 'new_message',
-        data: {
-          statusCode: 200,
-          message: msg
-        }
-      })
-    )
-  } catch (e) {
-    console.log(e)
-  }
-  return msg
+
 }
 export default SendMessage

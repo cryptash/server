@@ -1,10 +1,10 @@
 import {
-  Model,
-  DataTypes,
-  HasManyGetAssociationsMixin,
   Association,
+  DataTypes,
   HasManyAddAssociationMixin,
-  HasManyHasAssociationMixin
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  Model
 } from 'sequelize'
 import sequelize from '../lib/db_connect'
 import User from './User.model'
@@ -21,6 +21,7 @@ class Chat extends Model {
   public static associations: {
     projects: Association<Chat, Message>
   }
+  public loadMessages!: (pg: number) => Promise<Message[]>
 }
 Chat.init(
   {
@@ -30,6 +31,12 @@ Chat.init(
   },
   { tableName: 'Chats', sequelize }
 )
+Chat.prototype.loadMessages = async function(pg){
+  return await this.getMessages({
+    limit: 50,
+    offset: pg * 50
+  })
+}
 // Chat.hasMany(Message)
 Chat.belongsToMany(User, {
   through: 'ChatUsers'

@@ -9,6 +9,7 @@ class Message extends Model {
   date!: string
   to!: string
   read!: boolean
+  isMe!: boolean
 }
 Message.init(
   {

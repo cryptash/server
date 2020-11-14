@@ -12,6 +12,7 @@ import searchUsers from './api/searchUsers'
 import checkAuth from './api/checkAuth'
 import getUserInfo from './api/user/getUserInfo'
 import createChat from './api/chat/createChat'
+import {getMessages} from "./api/chat/getMessages";
 connection.sync()
 const port: number = config.port || 8080
 const clients: any = { server: { server: true } }
@@ -55,6 +56,14 @@ wss.on('connection', function connection(ws: any) {
     if (message.action === 'send_message') {
       delete message.action
       await SendMessage(message, clients)
+    }
+    if (message.action === 'get_messages') {
+      delete message.action
+      ws.send(JSON.stringify(await getMessages(
+          message.chat_id,
+          message.jwt,
+          message.pg,
+      )))
     }
   })
   ws.on('pong', function () {
