@@ -1,10 +1,15 @@
 import jwt from 'jsonwebtoken'
 import * as config from '../config.json'
 import User from '../models/User.model'
-import { FastifyReply } from 'fastify'
-const getKey = async (req: any, res: FastifyReply<object>) => {
+import {FastifyReply, FastifyRequest} from 'fastify'
+import * as http from "http";
+const getKey = async (req:  FastifyRequest<{
+  Body: {
+    user_id: string
+  },
+}>, res: FastifyReply<http.Server>) => {
   console.log(req.body)
-  const token = jwt.verify(req.headers.authorization, config.secret)
+  const token = jwt.verify(req.headers.authorization || '', config.secret)
   if (!token) {
     res.status(401).send({
       statusCode: 401,

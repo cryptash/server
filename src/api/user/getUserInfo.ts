@@ -6,8 +6,12 @@ import Chat from '../../models/Chat.model'
 import Message from '../../models/Message.model'
 import {literal, Op} from 'sequelize'
 
-const getUserInfo = async (req: FastifyRequest, res: FastifyReply<any>) => {
-  const token: any = jwt.verify(req.headers.authorization, config.secret)
+const getUserInfo = async (req:  FastifyRequest<{
+  Body: {
+    user_id: string
+  },
+}>, res: FastifyReply<any>) => {
+  const token: any = jwt.verify(req.headers.authorization || '', config.secret)
   if (!token) {
     res.status(401).send({
       statusCode: 401,

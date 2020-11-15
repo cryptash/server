@@ -1,4 +1,5 @@
-import fastify from 'fastify'
+import fastify, {FastifyInstance} from 'fastify'
+import {FastifyReply, FastifyRequest} from "fastify";
 import ws from 'ws'
 import jwt from 'jsonwebtoken'
 import connection from './lib/db_connect'
@@ -12,14 +13,25 @@ import searchUsers from './api/searchUsers'
 import checkAuth from './api/checkAuth'
 import getUserInfo from './api/user/getUserInfo'
 import createChat from './api/chat/createChat'
-import {getMessages} from "./api/chat/getMessages";
+import {getMessages} from "./api/chat/getMessages"
+import path from 'path'
+import fs from 'fs'
+import * as http from "http";
+import * as http2 from "http2";
+
 connection.sync()
 const port: number = config.port || 8080
 const clients: any = { server: { server: true } }
 const server = fastify()
+
 server.register(fastifyCors, {
   origin: '*'
 })
+server.register(require('fastify-static'), {
+  root: path.join(__dirname, '../client/dist'),
+  wildcard: false,
+})
+
 const wss = new ws.Server({ server: server.server })
 wss.on('connection', function connection(ws: any) {
   console.log('new connection')
@@ -65,6 +77,10 @@ wss.on('connection', function connection(ws: any) {
           message.pg,
       )))
     }
+    if (message.action === 'search_users') {
+      delete message.action
+
+    }
   })
   ws.on('pong', function () {
     clients[token.user_id].isAlive = true
@@ -84,20 +100,41 @@ const interval = setInterval(function ping() {
     ws.connection.ping()
   })
 }, 15000)
+server.get(
+    '*',
+    (
+        request: FastifyRequest,
+        reply: FastifyReply<http.Server>
+    ) => {
+      // @ts-ignore
+      return reply.sendFile('index.html')
+    }
+)
 server.post(
   '/api/login',
   async (
-    request: fastify.FastifyRequest,
-    reply: fastify.FastifyReply<object>
+    request:  FastifyRequest<{
+      Body: {
+        username: string,
+        password: string,
+      },
+    }>,
+    reply: FastifyReply<http.Server>
   ) => {
-    await Login(request, reply)
+    return await Login(request, reply);
   }
 )
 server.post(
   '/api/register',
   async (
-    request: fastify.FastifyRequest,
-    reply: fastify.FastifyReply<object>
+    request:  FastifyRequest<{
+      Body: {
+        username: string,
+        password: string,
+        pub_key: string,
+      },
+    }>,
+    reply: FastifyReply<http.Server>
   ) => {
     await Register(request, reply)
   }
@@ -105,8 +142,12 @@ server.post(
 server.post(
   '/api/users/getKey',
   async (
-    request: fastify.FastifyRequest,
-    reply: fastify.FastifyReply<object>
+    request:  FastifyRequest<{
+      Body: {
+        user_id: string
+      },
+    }>,
+    reply: FastifyReply<http.Server>
   ) => {
     await getKey(request, reply)
   }
@@ -114,8 +155,12 @@ server.post(
 server.post(
   '/api/users/search',
   async (
-    request: fastify.FastifyRequest,
-    reply: fastify.FastifyReply<object>
+    request:  FastifyRequest<{
+      Body: {
+        query: string
+      },
+    }>,
+    reply: FastifyReply<http.Server>
   ) => {
     await searchUsers(request, reply)
   }
@@ -123,8 +168,12 @@ server.post(
 server.post(
   '/api/checkAuth',
   async (
-    request: fastify.FastifyRequest,
-    reply: fastify.FastifyReply<object>
+    request:  FastifyRequest<{
+      Body: {
+        token: string
+      },
+    }>,
+    reply: FastifyReply<http.Server>
   ) => {
     await checkAuth(request, reply)
   }
@@ -132,8 +181,12 @@ server.post(
 server.post(
   '/api/users/getInfo',
   async (
-    request: fastify.FastifyRequest,
-    reply: fastify.FastifyReply<object>
+    request:  FastifyRequest<{
+      Body: {
+        user_id: string
+      },
+    }>,
+    reply: FastifyReply<http.Server>
   ) => {
     await getUserInfo(request, reply)
   }
@@ -141,8 +194,12 @@ server.post(
 server.post(
   '/api/chat/create',
   async (
-    request: fastify.FastifyRequest,
-    reply: fastify.FastifyReply<object>
+    request:  FastifyRequest<{
+      Body: {
+        user_id: string
+      },
+    }>,
+    reply: FastifyReply<http.Server>
   ) => {
     await createChat(request, reply)
   }

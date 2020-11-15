@@ -1,6 +1,12 @@
 import User from '../models/User.model'
-import { FastifyReply, FastifyRequest } from 'fastify'
-const Login = async (req: FastifyRequest, res: FastifyReply<object>) => {
+import {FastifyInstance, FastifyReply, FastifyRequest} from 'fastify'
+import * as http from "http";
+const Login = async (req:  FastifyRequest<{
+  Body: {
+    username: string,
+    password: string,
+  },
+}>, res: FastifyReply<http.Server>) => {
   const user = await User.findOne({ where: { username: req.body.username } })
   console.log(user)
   if (!user) {

@@ -1,18 +1,20 @@
 import User from '../../models/User.model'
-import bcrypt from 'bcrypt'
 import nanoid from 'nanoid'
-import fastify from 'fastify'
+import {FastifyReply, FastifyRequest} from 'fastify'
 import Chat from '../../models/Chat.model'
 import jwt from 'jsonwebtoken'
 import * as config from '../../config.json'
-import { literal, Op } from 'sequelize'
+import * as http from "http";
 
 const createChat = async (
-  req: fastify.FastifyRequest,
-  res: fastify.FastifyReply<object>
+  req: FastifyRequest<{
+    Body: {
+      user_id: string
+    },
+  }>,
+  res: FastifyReply<http.Server>
 ) => {
-  console.log(req.body)
-  const token: any = jwt.verify(req.headers.authorization, config.secret)
+  const token: any = jwt.verify(req.headers.authorization || '', config.secret)
   if (!token) {
     res.status(401).send({
       statusCode: 401,
@@ -65,6 +67,6 @@ const createChat = async (
     if (e) return console.log(e)
   }
 
-  res.status(200).send({ statusCode: 200 })
+  res.status(200).send({ statusCode: 200, chat_id: chat.chat_id })
 }
 export default createChat

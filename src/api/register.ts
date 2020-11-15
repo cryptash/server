@@ -1,11 +1,18 @@
 import User from '../models/User.model'
 import bcrypt from 'bcrypt'
 import nanoid from 'nanoid'
-import fastify from 'fastify'
+import fastify, {FastifyReply, FastifyRequest} from 'fastify'
 import { randomGradient } from '../lib/randomGradient'
+import * as http from "http";
 const Register = async (
-  req: fastify.FastifyRequest,
-  res: fastify.FastifyReply<object>
+  req:  FastifyRequest<{
+    Body: {
+      username: string,
+      password: string,
+      pub_key: string,
+    },
+  }>,
+  res: FastifyReply<http.Server>
 ) => {
   console.log(req.body)
   let pass_regexp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,31}$/ // 8 to 31 characters which contain at least one lowercase letter, one uppercase letter, one numeric digit, and one special character

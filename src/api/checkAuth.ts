@@ -1,9 +1,14 @@
 import jwt from 'jsonwebtoken'
 import * as config from '../config.json'
-import fastify from 'fastify'
+import {FastifyReply, FastifyRequest} from 'fastify'
+import * as http from "http";
 const checkAuth = async (
-  req: fastify.FastifyRequest,
-  res: fastify.FastifyReply<object>
+  req:  FastifyRequest<{
+    Body: {
+      token: string
+    },
+  }>,
+  res: FastifyReply<http.Server>
 ) => {
   console.log(req.body)
   try {

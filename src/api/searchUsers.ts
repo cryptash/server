@@ -3,17 +3,23 @@ import sequelize from 'sequelize'
 import jwt from 'jsonwebtoken'
 import * as config from '../config.json'
 import { FastifyReply, FastifyRequest } from 'fastify'
+import * as http from "http";
 
-const searchUsers = async (req: FastifyRequest, res: FastifyReply<object>) => {
-  console.log(req)
+const searchUsers = async (req:  FastifyRequest<{
+  Body: {
+    query: string
+  },
+}>, res: FastifyReply<http.Server>) => {
   const query = req.body.query.toLowerCase()
-  if (query.length < 4)
-    return {
+  if (query.length < 3) {
+    res.status(400).send({
       statusCode: 400,
       message: 'Query must be longer than 3',
       error: 'Bad request'
-    }
-  const token = jwt.verify(req.headers.authorization, config.secret)
+    })
+    return
+  }
+  const token: any = jwt.verify(req.headers.authorization || '', config.secret)
   if (!token) {
     res.status(401).send({
       statusCode: 401,
@@ -22,14 +28,14 @@ const searchUsers = async (req: FastifyRequest, res: FastifyReply<object>) => {
     })
     return
   }
-  if (!req.body.user_id) {
-    res.status(400).send({
-      statusCode: 400,
-      error: 'Bad request',
-      message: "user_id can't be empty"
-    })
-    return
-  }
+  // if (!req.body.user_id) {
+  //   res.status(400).send({
+  //     statusCode: 400,
+  //     error: 'Bad request',
+  //     message: "user_id can't be empty"
+  //   })
+  //   return
+  // }
   const users = await User.findAll({
     where: {
       username: sequelize.where(
@@ -45,11 +51,12 @@ const searchUsers = async (req: FastifyRequest, res: FastifyReply<object>) => {
     picture_url: string
   }[] = []
   users.map((user) => {
-    result.push({
-      username: user.username,
-      user_id: user.user_id,
-      picture_url: user.picture_url
-    })
+    if (user.user_id !== token.user_id)
+      result.push({
+        username: user.username,
+        user_id: user.user_id,
+        picture_url: user.picture_url
+      })
   })
   res
     .status(200)
