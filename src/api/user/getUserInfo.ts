@@ -92,6 +92,8 @@ const getUserInfo = async (req:  FastifyRequest<{
       picture: user.picture_url,
       chats: []
     }
+    //@ts-ignore
+    user.Chats.sort((a, b) => new Date(b.messageAt) - new Date(a.messageAt))
     user.Chats.forEach(chat => {
       //@ts-ignore
       const user = chat['Users'][0]

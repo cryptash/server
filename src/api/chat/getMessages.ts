@@ -1,7 +1,13 @@
 import Chat from "../../models/Chat.model";
 import jwt from "jsonwebtoken";
 import * as config from "../../config.json";
-
+interface Message {
+  content: string,
+  fromMe: boolean,
+  date: Date,
+  read: boolean,
+  message_id: string
+}
 export const getMessages = async (chat_id: string, jwt_token: string, pg: number) => {
   const token: any = jwt.verify(jwt_token, config.secret)
   if (!token) {
@@ -16,21 +22,27 @@ export const getMessages = async (chat_id: string, jwt_token: string, pg: number
     }
   })
   const messages = await chat?.loadMessages(pg)
-  if (!messages) {
-    return {
-      statusCode: 200,
-      action: 'get_messages',
-      messages: [],
-    }
-  }
-  for (let i = 0; i < messages.length; i++) {
-    // @ts-ignore
-    messages[i].dataValues.isMe = messages[i].from === token.user_id
-    console.log(messages[i])
-  }
-  return {
+  const result: {
+    statusCode: number
+    action: string
+    messages: Message[]
+  } = {
     statusCode: 200,
     action: 'get_messages',
-    messages,
+    messages: []
   }
+  if (!messages) {
+    return result
+  }
+  messages.forEach(msg => {
+    result.messages.push({
+      //@ts-ignore
+      content: msg.content,
+      fromMe: msg.from === token.user_id,
+      date: new Date(msg.date),
+      read: msg.read,
+      message_id: msg.message_id
+    })
+  })
+  return result
 }
