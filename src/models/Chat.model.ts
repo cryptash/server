@@ -34,7 +34,8 @@ Chat.init(
 Chat.prototype.loadMessages = async function(pg){
   return await this.getMessages({
     limit: 50,
-    offset: pg * 50
+    offset: pg * 50,
+    order: [['createdAt', 'DESC']],
   })
 }
 // Chat.hasMany(Message)

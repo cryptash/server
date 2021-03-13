@@ -1,6 +1,9 @@
 import Chat from "../../models/Chat.model";
 import jwt from "jsonwebtoken";
 import * as config from "../../config.json";
+import User from "../../models/User.model";
+import { Op } from "sequelize";
+
 interface Message {
   content: string,
   fromMe: boolean,
@@ -19,16 +22,31 @@ export const getMessages = async (chat_id: string, jwt_token: string, pg: number
   const chat = await Chat.findOne({
     where: {
       chat_id,
-    }
+    },
+    include: [
+      {
+        model: User,
+        required: true,
+        attributes: ['pub_key', 'user_id', 'picture_url', 'username'],
+        where: {
+          [Op.not]: [{ user_id: token.user_id }]
+        }
+      }
+    ]
   })
+  console.log(chat)
   const messages = await chat?.loadMessages(pg)
+  messages?.reverse()
   const result: {
     statusCode: number
     action: string
     messages: Message[]
+    pub_key: string
   } = {
     statusCode: 200,
     action: 'get_messages',
+    //@ts-ignore
+    pub_key: chat['Users'][0].pub_key,
     messages: []
   }
   if (!messages) {

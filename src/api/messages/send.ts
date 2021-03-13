@@ -75,7 +75,6 @@ const SendMessage = async (
           })
       )
     } catch (e) {
-      console.log(e)
     }
     try {
       // @ts-ignore
@@ -90,7 +89,6 @@ const SendMessage = async (
           })
       )
     } catch (e) {
-      console.log(e)
     }
     return msg
   }
