@@ -18,6 +18,7 @@ import path from 'path'
 import fs from 'fs'
 import * as http from "http";
 import * as http2 from "http2";
+import markAsRead from './api/messages/markAsRead';
 
 connection.sync()
 const port: number = config.port || 8080
@@ -79,7 +80,10 @@ wss.on('connection', function connection(ws: any) {
     }
     if (message.action === 'search_users') {
       delete message.action
-
+    }
+    if (message.action === 'mark_as_read'){
+      delete message.action
+      await markAsRead(message, clients)
     }
   })
   ws.on('pong', function () {
