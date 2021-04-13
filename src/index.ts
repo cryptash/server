@@ -15,9 +15,7 @@ import getUserInfo from './api/user/getUserInfo'
 import createChat from './api/chat/createChat'
 import {getMessages} from "./api/chat/getMessages"
 import path from 'path'
-import fs from 'fs'
 import * as http from "http";
-import * as http2 from "http2";
 import markAsRead from './api/messages/markAsRead';
 
 connection.sync()
