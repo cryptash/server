@@ -48,14 +48,14 @@ const searchUsers = async (req:  FastifyRequest<{
   const result: {
     username: string
     user_id: string
-    picture_url: string
+    picture: string
   }[] = []
   users.map((user) => {
     if (user.user_id !== token.user_id)
       result.push({
         username: user.username,
         user_id: user.user_id,
-        picture_url: user.picture_url
+        picture: user.picture_url
       })
   })
   res
