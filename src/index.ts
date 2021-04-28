@@ -20,7 +20,7 @@ import markAsRead from './api/messages/markAsRead';
 
 connection.sync()
 const port: number = config.port || 8080
-const clients: any = { server: { server: true } }
+const clients: {[key: string]: any[]} = {}
 const server = fastify()
 
 server.register(fastifyCors, {
@@ -35,6 +35,7 @@ const wss = new ws.Server({ server: server.server })
 wss.on('connection', function connection(ws: any) {
   console.log('new connection')
   let token: any
+  let id: number
   ws.on('message', async function incoming(message: any) {
     message = JSON.parse(message)
     if (message.action === 'register') {
@@ -47,11 +48,15 @@ wss.on('connection', function connection(ws: any) {
             message: 'Invalid token'
           })
         )
-      clients[token.user_id] = {
+      if (!clients[token.user_id]) {
+        clients[token.user_id] = []
+      }
+      clients[token.user_id].push({
         user_id: token.user_id,
         connection: ws,
         isAlive: true
-      }
+      })
+      id = clients[token.user_id].length - 1
       ws.send(
         JSON.stringify({
           action: 'info',
@@ -85,21 +90,22 @@ wss.on('connection', function connection(ws: any) {
     }
   })
   ws.on('pong', function () {
-    clients[token.user_id].isAlive = true
+    clients[token.user_id][id].isAlive = true
     console.log(token.user_id)
   })
 })
 const interval = setInterval(function ping() {
   Object.keys(clients).map((key) => {
-    const ws = clients[key]
-    if (ws.server) return
-    if (!ws.isAlive) {
-      ws.connection.terminate()
-      delete clients[ws.user_id]
-      return
-    }
-    ws.isAlive = false
-    ws.connection.ping()
+    let ws;
+    clients[key].forEach((ws: { isAlive: boolean; connection: { terminate: () => void; ping: () => void; }; user_id: string | number; }) => {
+      if (!ws.isAlive) {
+        ws.connection.terminate()
+        delete clients[ws.user_id]
+        return
+      }
+      ws.isAlive = false
+      ws.connection.ping()
+    })
   })
 }, 15000)
 server.get(

@@ -65,21 +65,21 @@ const SendMessage = async (
     try {
       // @ts-ignore
       msg.dataValues.isMe = false
-      ws_clients[msg.to].connection.send(
-          JSON.stringify({
-            action: 'new_message',
-            data: {
-              statusCode: 200,
-              message: msg
-            }
-          })
-      )
+      ws_clients[msg.to].forEach((ws: { connection: { send: (_: string) => any } })=> ws.connection.send(
+        JSON.stringify({
+          action: 'new_message',
+          data: {
+            statusCode: 200,
+            message: msg
+          }
+        })
+      ))
     } catch (e) {
     }
     try {
       // @ts-ignore
       msg.dataValues.isMe = true
-      ws_clients[msg.from].connection.send(
+      ws_clients[msg.from].forEach((ws: { connection: { send: (_: string) => any } })=> ws.connection.send(
           JSON.stringify({
             action: 'new_message',
             data: {
@@ -87,7 +87,7 @@ const SendMessage = async (
               message: msg
             }
           })
-      )
+      ))
     } catch (e) {
     }
     return msg

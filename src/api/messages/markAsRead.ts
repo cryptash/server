@@ -58,30 +58,30 @@ const markAsRead = async (
     }
     try {
       // @ts-ignore
-      ws_clients[msg.to].connection.send(
-          JSON.stringify({
-            action: 'message_read_by_me',
-            data: {
-                statusCode: 200,
-                message_id: msg.message_id,
-                chat_id: msg.chat_id,
-            }
-          })
-      )
+      ws_clients[msg.to].forEach((ws: { connection: { send: (_: string) => any } })=> ws.connection.send(
+        JSON.stringify({
+          action: 'message_read_by_me',
+          data: {
+            statusCode: 200,
+            message_id: msg.message_id,
+            chat_id: msg.chat_id,
+          }
+        })
+      ))
     } catch (e) {
     }
     try {
       // @ts-ignore
-      ws_clients[msg.from].connection.send(
-          JSON.stringify({
-            action: 'message_read_by_user',
-            data: {
-              statusCode: 200,
-              message_id: msg.message_id,
-              chat_id: msg.chat_id,
-            }
-          })
-      )
+      ws_clients[msg.from].forEach((ws: { connection: { send: (_: string) => any } })=> ws.connection.send(
+        JSON.stringify({
+          action: 'message_read_by_user',
+          data: {
+            statusCode: 200,
+            message_id: msg.message_id,
+            chat_id: msg.chat_id,
+          }
+        })
+      ))
     } catch (e) {
     }
     return msg
