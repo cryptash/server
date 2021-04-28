@@ -90,7 +90,8 @@ wss.on('connection', function connection(ws: any) {
     }
   })
   ws.on('pong', function () {
-    clients[token.user_id][id].isAlive = true
+    if (clients[token.user_id][id])
+      clients[token.user_id][id].isAlive = true
     console.log(token.user_id)
   })
 })
