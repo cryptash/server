@@ -17,12 +17,21 @@ import {getMessages} from "./api/chat/getMessages"
 import path from 'path'
 import * as http from "http";
 import markAsRead from './api/messages/markAsRead';
-
+import { Server } from '@logux/server'
+import type { BaseServer } from '@logux/server'
 connection.sync()
 const port: number = config.port || 8080
 const clients: {[key: string]: any[]} = {}
+const loguxServer: BaseServer = new Server(
+  Server.loadOptions(process, {
+    subprotocol: '1.0.0',
+    supports: '1.x',
+    root: __dirname
+  })
+)
 const server = fastify()
 
+// loguxServer.listen()
 server.register(fastifyCors, {
   origin: '*'
 })

@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "ES2015",
     "module": "commonjs",
-    "lib": ["es2017", "es7", "es6", "dom"],
+    "lib": ["es5", "ES2015", "ES2016", "ESNext", "es2017", "es7", "es6", "dom", "es5"],
     "declaration": true,
     "rootDir": "src",
     "outDir": "dist",
     "strict": true,
+    "allowJs": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "downlevelIteration": true
