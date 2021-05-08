@@ -90,7 +90,7 @@ wss.on('connection', function connection(ws: any) {
     }
   })
   ws.on('pong', function () {
-    if (clients[token.user_id][id])
+    if (clients[token.user_id] && clients[token.user_id][id])
       clients[token.user_id][id].isAlive = true
     console.log(token.user_id)
   })
@@ -98,10 +98,10 @@ wss.on('connection', function connection(ws: any) {
 const interval = setInterval(function ping() {
   Object.keys(clients).map((key) => {
     let ws;
-    clients[key].forEach((ws: { isAlive: boolean; connection: { terminate: () => void; ping: () => void; }; user_id: string | number; }) => {
+    clients[key].forEach((ws: { isAlive: boolean; connection: { terminate: () => void; ping: () => void; }; user_id: string | number; }, index) => {
       if (!ws.isAlive) {
         ws.connection.terminate()
-        delete clients[ws.user_id]
+        delete clients[ws.user_id][index]
         return
       }
       ws.isAlive = false
