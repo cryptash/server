@@ -3,22 +3,20 @@ import MessageModel from '../../models/Message.model'
 import jwt from 'jsonwebtoken'
 import * as config from '../../config.json'
 import { nanoid } from 'nanoid'
+import {BaseServer, Context, ServerMeta} from "@logux/server";
 const SendMessage = async (
-  message: {
-    chatId: string
-    content: string
-    token: string
-  },
-  ws_clients: any
+  ctx: Context,
+  action:{
+    type: 'chat/messages/send',
+    payload: {
+      content: string, chat_id: string, from: string
+    }},
+  meta: ServerMeta,
+  server: BaseServer
 ) => {
-  const token: any = jwt.verify(message.token, config.secret)
-  if (!token) {
-    return
-  }
-  console.log('create')
   const chat = await Chat.findOne({
     where: {
-      chat_id: message.chatId
+      chat_id: action.payload.chat_id
     },
     include: [
       {
@@ -40,9 +38,9 @@ const SendMessage = async (
   if (typeof users !== "string") {
     const msg = new MessageModel({
       chat_id: chat?.chat_id,
-      from: token.user_id,
-      to: users.filter((x: string) => x !== token.user_id)[0],
-      content: message.content,
+      from: ctx.userId,
+      to: users.filter((x: string) => x !== ctx.userId)[0],
+      content: action.payload.content,
       read: false,
       date: new Date(),
       message_id: nanoid(21)
@@ -62,35 +60,8 @@ const SendMessage = async (
       console.log('msg')
       console.log(e)
     }
-    try {
-      // @ts-ignore
-      msg.dataValues.isMe = false
-      ws_clients[msg.to].forEach((ws: { connection: { send: (_: string) => any } })=> ws.connection.send(
-        JSON.stringify({
-          action: 'new_message',
-          data: {
-            statusCode: 200,
-            message: msg
-          }
-        })
-      ))
-    } catch (e) {
-    }
-    try {
-      // @ts-ignore
-      msg.dataValues.isMe = true
-      ws_clients[msg.from].forEach((ws: { connection: { send: (_: string) => any } })=> ws.connection.send(
-          JSON.stringify({
-            action: 'new_message',
-            data: {
-              statusCode: 200,
-              message: msg
-            }
-          })
-      ))
-    } catch (e) {
-    }
-    return msg
+    server.log.add({type: 'chat/message/create', payload: msg}, {users: [msg.from, msg.to]})
+    return ctx.sendBack({type: 'chat/message/setId', payload: {id: msg.message_id}})
   }
 
 }
