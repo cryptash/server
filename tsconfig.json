@@ -1,14 +1,18 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
+    "target": "ES2018",
     "module": "commonjs",
-    "lib": ["es5", "ES2015", "ES2016", "ESNext", "es2017", "es7", "es6", "dom", "es5"],
+    "lib": [
+      "ES2019", "DOM", "ES2018"
+    ],
     "declaration": true,
     "rootDir": "src",
     "outDir": "dist",
     "strict": true,
     "allowJs": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noErrorTruncation": true,
     "resolveJsonModule": true,
     "downlevelIteration": true
   },
