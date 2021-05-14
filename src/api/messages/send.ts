@@ -42,7 +42,7 @@ const SendMessage = async (
       to: users.filter((x: string) => x !== ctx.userId)[0],
       content: action.payload.content,
       read: false,
-      date: new Date(),
+      date: new Date(meta.time),
       message_id: nanoid(21)
     })
     console.log(msg)
@@ -61,7 +61,7 @@ const SendMessage = async (
       console.log(e)
     }
     server.log.add({type: 'chat/message/create', payload: msg}, {users: [msg.from, msg.to]})
-    return ctx.sendBack({type: 'chat/message/setId', payload: {id: msg.message_id}})
+    return ctx.sendBack({type: 'chat/message/setId', payload: {id: msg.message_id, chat_id: action.payload.chat_id}})
   }
 
 }

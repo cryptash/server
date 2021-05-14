@@ -144,6 +144,43 @@ loguxServer.type('chat/messages/get', {
     await getMessages(ctx, action, meta, loguxServer)
   }
 })
+loguxServer.type('chat/message/read', {
+  async access (ctx, action:{
+    type: 'chat/message/read',  payload: {
+      chat_id: string, message_id: string
+    }}, meta) {
+    const chat = await Chat.findOne({
+      where: {
+        chat_id: action.payload.chat_id,
+      },
+      include: [
+        {
+          model: User,
+          required: true,
+          attributes: ['pub_key', 'user_id', 'picture_url', 'username'],
+        }
+      ]
+    })
+    if (chat) {
+      if (chat.users[0]) {
+        return chat.users.includes(ctx.userId)
+      }
+    }
+    return false
+  },
+  async process (ctx, action:{
+    type: 'chat/message/read',  payload: {
+      chat_id: string, message_id: string
+    }}, meta) {
+    await markAsRead(ctx, action, meta, loguxServer)
+  },
+  async resend (ctx, action:{
+    type: 'chat/message/read',  payload: {
+      chat_id: string, message_id: string
+    }}, meta) {
+    return {channel: `chat/${action.payload.chat_id}`}
+  }
+})
 loguxServer.type('chat/messages/send', {
   async access (ctx, action:{
     type: 'chat/messages/send',  payload: {

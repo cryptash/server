@@ -3,22 +3,11 @@ import MessageModel from '../../models/Message.model'
 import jwt from 'jsonwebtoken'
 import * as config from '../../config.json'
 import { nanoid } from 'nanoid'
-const markAsRead = async (
-  message: {
-    chatId: string
-    messageId: string
-    token: string
-  },
-  ws_clients: any
-) => {
-  const token: any = jwt.verify(message.token, config.secret)
-  if (!token) {
-    return
-  }
-  console.log('read')
+import {BaseServer, Context, ServerMeta} from "@logux/server";
+const markAsRead = async (ctx: Context, action: any, meta: ServerMeta, server: BaseServer) => {
   const chat = await Chat.findOne({
     where: {
-      chat_id: message.chatId
+      chat_id: action.payload.chat_id
     },
     include: [
       {
@@ -38,11 +27,11 @@ const markAsRead = async (
     console.log()
   }
   if (typeof users !== "string" && messages) {
-    const msg = messages.filter(x => x.message_id === message.messageId)[0]
+    const msg = messages.filter(x => x.message_id === action.payload.message_id)[0]
     if (msg.read) {
         return
     }
-    if (msg.to === token.user_id){
+    if (msg.to === ctx.userId){
         msg.read = true
     }
     else {
@@ -55,34 +44,6 @@ const markAsRead = async (
     } catch (e) {
       console.log('save')
       console.log(e)
-    }
-    try {
-      // @ts-ignore
-      ws_clients[msg.to].forEach((ws: { connection: { send: (_: string) => any } })=> ws.connection.send(
-        JSON.stringify({
-          action: 'message_read_by_me',
-          data: {
-            statusCode: 200,
-            message_id: msg.message_id,
-            chat_id: msg.chat_id,
-          }
-        })
-      ))
-    } catch (e) {
-    }
-    try {
-      // @ts-ignore
-      ws_clients[msg.from].forEach((ws: { connection: { send: (_: string) => any } })=> ws.connection.send(
-        JSON.stringify({
-          action: 'message_read_by_user',
-          data: {
-            statusCode: 200,
-            message_id: msg.message_id,
-            chat_id: msg.chat_id,
-          }
-        })
-      ))
-    } catch (e) {
     }
     return msg
   }
