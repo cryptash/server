@@ -10,6 +10,7 @@ const Register = async (
       username: string,
       password: string,
       pub_key: string,
+      private_key: string,
     },
   }>,
   res: FastifyReply<http.Server>

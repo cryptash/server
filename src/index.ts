@@ -24,6 +24,7 @@ import {Check} from "./logux/User/Check";
 import Chat from "./models/Chat.model";
 import User from "./models/User.model";
 import {Op} from "sequelize";
+import {RegisterLogux} from "./logux/register";
 connection.sync()
 const port: number = config.port || 8080
 const clients: {[key: string]: any[]} = {}
@@ -64,6 +65,27 @@ loguxServer.type('login', {
     password: string,
   }, meta) {
     await LoginLogux(ctx, action, meta, loguxServer)
+  }
+})
+loguxServer.type('register', {
+  async access (ctx, action: {
+    type: 'register',
+    username: string,
+    password: string,
+    pub_key: string,
+    private_key: string
+  }, meta) {
+    console.log('register')
+    return ctx.userId === 'anonymous'
+  },
+  async process (ctx, action: {
+    type: 'register',
+    username: string,
+    password: string,
+    pub_key: string,
+    private_key: string
+  }, meta) {
+    await RegisterLogux(ctx, action, meta, loguxServer)
   }
 })
 loguxServer.type('user/check', {
@@ -211,13 +233,35 @@ loguxServer.type('chat/messages/send', {
     }}, meta) {
     await SendMessage(ctx, action, meta, loguxServer)
   },
-  // async resend(ctx, action:{
-  //   type: 'chat/messages/send',  payload: {
-  //     content: string, chat_id: string, from: string
-  //   }}, meta) {
-  //   return { channel: `chat/${action.payload.chat_id}` }
-  // }
 })
+
+loguxServer.type('users/search', {
+  async access (ctx) {
+    return ctx.userId !== 'anonymous'
+  },
+  async process (ctx, action: {
+    type: 'users/search',
+    payload: {
+      query: string
+    },
+  }, meta) {
+    await searchUsers(ctx, action, meta, loguxServer)
+  }
+})
+loguxServer.type('chat/create', {
+  async access (ctx) {
+    return ctx.userId !== 'anonymous'
+  },
+  async process (ctx, action: {
+    type: 'chat/create',
+    payload: {
+      user_id: string
+    },
+  }, meta) {
+    await createChat(ctx, action, meta, loguxServer)
+  }
+})
+
 server.register(fastifyCors, {
   origin: '*'
 })

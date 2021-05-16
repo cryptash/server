@@ -15,7 +15,7 @@ const LoginLogux = async (ctx: Context, action: {
     server.undo(meta, 'Wrong password')
     return
   } else {
-    ctx.sendBack({ type: 'login/done', ...user.toAuthJSON(), user_id: user.user_id })
+    ctx.sendBack({ type: 'login/done', ...user.toAuthJSON(), user_id: user.user_id, private_key: user.private_key })
   }
   return
 }
