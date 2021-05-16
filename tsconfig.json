@@ -17,5 +17,5 @@
     "downlevelIteration": true
   },
   "include": ["**/*"],
-  "exclude": ["node_modules", "dist", "*.json", "testing"]
+  "exclude": ["node_modules", "dist", "*.json", "testing","client"]
 }
