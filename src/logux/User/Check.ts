@@ -1,7 +1,7 @@
 import {BaseServer, Context, ServerMeta} from "@logux/server"
 import jwt from 'jsonwebtoken'
 import User from '../../models/User.model.js'
-import * as config from '../../config.json'
+import config from '../../config.json'
 const Check = async (ctx: Context, action: {
   type: 'user/check',
   token: string,
@@ -19,6 +19,7 @@ const Check = async (ctx: Context, action: {
     }
   }
   catch (e) {
+    console.log(e)
     return server.undo(action, meta, 'Unknown user')
   }
   return ctx.sendBack({ type: 'user/check/done' })
