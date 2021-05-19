@@ -107,4 +107,6 @@ src/config.json
 
 package-lock.json
 
+client/
+
 .idea/

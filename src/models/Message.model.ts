@@ -1,7 +1,8 @@
-import { Model, DataTypes } from 'sequelize'
-import sequelize from '../lib/db_connect'
-import Chat from './Chat.model'
-class Message extends Model {
+import seq from 'sequelize'
+const {DataTypes} = seq
+import sequelize from '../lib/db_connect.js'
+import Chat from './Chat.model.js'
+class Message extends seq.Model {
   chat_id!: string
   from!: string
   message_id!: string

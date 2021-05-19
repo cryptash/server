@@ -1,11 +1,8 @@
-import Chat from "../../models/Chat.model";
-import jwt from "jsonwebtoken";
-import * as config from "../../config.json";
-import User from "../../models/User.model";
-import { Op } from "sequelize";
-import Context, {ChannelContext} from "@logux/server/context";
-import {BaseServer, LoguxSubscribeAction, ServerMeta} from "@logux/server";
-import {isType} from "typescript-fsa";
+import seq from "sequelize";
+import {BaseServer, ServerMeta} from "@logux/server";
+import Chat from "../../models/Chat.model.js";
+import User from "../../models/User.model.js";
+
 
 interface Message {
   content: string,
@@ -26,7 +23,7 @@ export const getMessages = async (ctx: any, action: any, meta: ServerMeta, serve
         required: true,
         attributes: ['pub_key', 'user_id', 'picture_url', 'username'],
         where: {
-          [Op.not]: [{ user_id: ctx.userId }]
+          [seq.Op.not]: [{ user_id: ctx.userId }]
         }
       }
     ]

@@ -7,8 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -p tsconfig.json",
-    "start": "node --experimental-modules dist/index.js",
-    "dev": "npm run build && node .",
+    "start": "node --experimental-modules --experimental-json-modules dist/index.js",
+    "dev": "npm run build && npm run start",
     "nodemon": "nodemon",
     "pretty": "prettier \"{,!(node_modules)/**/}*.{ts,js}\" --write"
   },
@@ -17,20 +17,23 @@
     "url": "git+https://github.com/Ciphen/server.git"
   },
   "author": "Vlad Denisov",
+  "type": "module",
+  "exports": "./dist/index.js",
+  "engines": {
+    "node": "^12.0.0 || ^14.0.0 || >=16.0.0"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Ciphen/server/issues"
   },
   "homepage": "https://github.com/Ciphen/server#readme",
   "dependencies": {
-    "@logux/server": "^0.9.6",
+    "@logux/server": "^0.10.0",
     "@types/validator": "^13.1.0",
     "bcrypt": "^5.0.0",
     "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
-    "fastify": "^3.8.0",
-    "fastify-cors": "^4.1.0",
-    "fastify-static": "^3.3.0",
+    "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "nanoid": "^3.1.10",
     "node-rsa": "^1.0.8",

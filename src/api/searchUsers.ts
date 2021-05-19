@@ -1,10 +1,6 @@
-import User from '../models/User.model'
 import sequelize from 'sequelize'
-import jwt from 'jsonwebtoken'
-import * as config from '../config.json'
-import { FastifyReply, FastifyRequest } from 'fastify'
-import * as http from "http";
 import {BaseServer, Context, ServerMeta} from "@logux/server";
+import User from '../models/User.model.js'
 
 const searchUsers = async (
   ctx: Context,
@@ -18,7 +14,7 @@ const searchUsers = async (
 ) => {
   const query = action.payload.query.toLowerCase()
   if (query.length < 3) {
-    server.undo(meta, 'Query must be longer than 3')
+    server.undo(action, meta, 'Query must be longer than 3')
     return
   }
   const users = await User.findAll({

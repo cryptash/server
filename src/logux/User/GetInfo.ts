@@ -1,12 +1,9 @@
-import jwt from 'jsonwebtoken'
-import * as config from '../../config.json'
-import User from '../../models/User.model'
-import { FastifyReply, FastifyRequest } from 'fastify'
-import Chat from '../../models/Chat.model'
-import Message from '../../models/Message.model'
-import {literal, Op} from 'sequelize'
-import {BaseServer, Context, LoguxSubscribeAction, ServerMeta} from "@logux/server";
+import seq from 'sequelize'
+import {BaseServer, ServerMeta} from "@logux/server";
 import {ChannelContext} from "@logux/server/context";
+import User from '../../models/User.model.js'
+import Chat from '../../models/Chat.model.js'
+import Message from '../../models/Message.model.js'
 
 interface ChatResponse {
   chat_id: string,
@@ -26,7 +23,7 @@ interface ChatResponse {
   }>
 }
 
-const getUserInfo = async (ctx: ChannelContext<any, any, any>, action: LoguxSubscribeAction, meta: ServerMeta, server: BaseServer) => {
+const getUserInfo = async (ctx: ChannelContext<any, any, any>, action: any, meta: ServerMeta, server: BaseServer) => {
   const params = ctx.params
   if (params.id) {
     const user = await User.findOne({
@@ -37,7 +34,7 @@ const getUserInfo = async (ctx: ChannelContext<any, any, any>, action: LoguxSubs
         {
           model: Chat,
           required: false,
-          order: [[literal('`updatedAt`'), 'DESC']],
+          order: [[seq.literal('`updatedAt`'), 'DESC']],
           attributes: {
             exclude: []
           },
@@ -54,7 +51,7 @@ const getUserInfo = async (ctx: ChannelContext<any, any, any>, action: LoguxSubs
               required: false,
               attributes: ['pub_key', 'user_id', 'picture_url', 'username'],
               where: {
-                [Op.not]: [{ user_id: params.id }]
+                [seq.Op.not]: [{ user_id: params.id }]
               }
             }
           ],
@@ -62,7 +59,7 @@ const getUserInfo = async (ctx: ChannelContext<any, any, any>, action: LoguxSubs
       ]
     })
     if (!user) {
-      return server.undo(meta, 'Unknown user')
+      return server.undo(action, meta, 'Unknown user')
     }
     const response: {
       username: string,
@@ -108,6 +105,6 @@ const getUserInfo = async (ctx: ChannelContext<any, any, any>, action: LoguxSubs
     return ctx.sendBack({type: 'user/get_info/done', payload: response})
 
   }
-  return server.undo(meta, 'Unknown error')
+  return server.undo(action, meta, 'Unknown error')
 }
 export default getUserInfo

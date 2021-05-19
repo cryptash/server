@@ -1,12 +1,8 @@
-import User from '../../models/User.model'
-import nanoid from 'nanoid'
-import {FastifyReply, FastifyRequest} from 'fastify'
-import Chat from '../../models/Chat.model'
-import jwt from 'jsonwebtoken'
-import * as config from '../../config.json'
-import * as http from "http";
+import {nanoid} from 'nanoid'
 import {BaseServer, Context, ServerMeta} from "@logux/server";
-import {Op} from "sequelize";
+import seq from "sequelize";
+import Chat from '../../models/Chat.model.js'
+import User from '../../models/User.model.js'
 
 const createChat = async (
   ctx: Context,
@@ -19,16 +15,16 @@ const createChat = async (
   server: BaseServer
 ) => {
   if (!action.payload.user_id) {
-    server.undo(meta, "user_id can't be empty")
+    server.undo(action, meta, "user_id can't be empty")
     return
   }
   const isChat = await Chat.findOne({
     where: {
-      users: {[Op.contains]: [action.payload.user_id,ctx.userId]},
+      users: {[seq.Op.contains]: [action.payload.user_id,ctx.userId]},
     }
   })
   if (isChat) {
-    server.undo(meta, 'Chat already exists')
+    server.undo(action, meta, 'Chat already exists')
     return
   }
   const user1 = await User.findOne({
@@ -44,7 +40,7 @@ const createChat = async (
   console.log([user1, user2])
   const chat = new Chat({
     users: [action.payload.user_id, ctx.userId],
-    chat_id: nanoid.nanoid(21)
+    chat_id: nanoid(21)
   })
   try {
     await chat.save()

@@ -1,6 +1,6 @@
 import {BaseServer, Context, ServerMeta} from "@logux/server"
 import jwt from 'jsonwebtoken'
-import User from '../../models/User.model'
+import User from '../../models/User.model.js'
 import * as config from '../../config.json'
 const Check = async (ctx: Context, action: {
   type: 'user/check',
@@ -10,16 +10,16 @@ const Check = async (ctx: Context, action: {
     const token: any = jwt.verify(action.token, config.secret)
     if (typeof token != 'string') {
       if (Date.now() >= token.exp * 1000) {
-        return server.undo(meta, 'Token expired')
+        return server.undo(action, meta, 'Token expired')
       }
     }
     const user = await User.findOne({ where: { user_id: token.user_id } })
     if (!user) {
-      return server.undo(meta, 'Unknown email')
+      return server.undo(action, meta, 'Unknown email')
     }
   }
   catch (e) {
-    return server.undo(meta, 'Unknown user')
+    return server.undo(action, meta, 'Unknown user')
   }
   return ctx.sendBack({ type: 'user/check/done' })
 }

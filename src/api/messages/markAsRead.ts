@@ -1,9 +1,7 @@
-import Chat from '../../models/Chat.model'
-import MessageModel from '../../models/Message.model'
-import jwt from 'jsonwebtoken'
-import * as config from '../../config.json'
-import { nanoid } from 'nanoid'
 import {BaseServer, Context, ServerMeta} from "@logux/server";
+import Chat from '../../models/Chat.model.js'
+import MessageModel from '../../models/Message.model.js'
+
 const markAsRead = async (ctx: Context, action: any, meta: ServerMeta, server: BaseServer) => {
   const chat = await Chat.findOne({
     where: {

@@ -1,41 +1,47 @@
-import fastify, {FastifyInstance} from 'fastify'
-import {FastifyReply, FastifyRequest} from "fastify";
-import ws from 'ws'
 import jwt from 'jsonwebtoken'
-import connection from './lib/db_connect'
-import Login from './api/login'
-import * as config from './config.json'
-import SendMessage from './api/messages/send'
-import getKey from './api/getKey'
-import fastifyCors from 'fastify-cors'
-import Register from './api/register'
-import searchUsers from './api/searchUsers'
-import checkAuth from './api/checkAuth'
-import getUserInfo from './logux/User/GetInfo'
-import createChat from './api/chat/createChat'
-import {getMessages} from "./logux/Chat/getMessages"
+import connection from './lib/db_connect.js'
+import config from './config.json'
+import SendMessage from './api/messages/send.js'
+import searchUsers from './api/searchUsers.js'
+import getUserInfo from './logux/User/GetInfo.js'
+import createChat from './api/chat/createChat.js'
+import {getMessages} from "./logux/Chat/getMessages.js"
 import path from 'path'
-import * as http from "http";
-import markAsRead from './api/messages/markAsRead';
+import express from 'express'
+import markAsRead from './api/messages/markAsRead.js';
 import { Server } from '@logux/server'
 import type { BaseServer } from '@logux/server'
-import {LoginLogux} from "./logux/login";
-import {Check} from "./logux/User/Check";
-import Chat from "./models/Chat.model";
-import User from "./models/User.model";
-import {Op} from "sequelize";
-import {RegisterLogux} from "./logux/register";
+import {LoginLogux} from "./logux/login.js";
+import {Check} from "./logux/User/Check.js";
+import Chat from "./models/Chat.model.js";
+import User from "./models/User.model.js";
+import {RegisterLogux} from "./logux/register.js";
+import * as fs from "fs";
 connection.sync()
 const port: number = config.port || 8080
-const clients: {[key: string]: any[]} = {}
 
-const server = fastify()
+const app = express()
+const staticDir = path.join('./client/dist')
+
+app.use(express.static(staticDir, { index: false }))
+app.get('*', function (_, response) {
+  response.sendFile(path.resolve(staticDir, 'index.html'))
+})
+
+const httpServer = app.listen(port)
+
+// const _on = httpServer.on
+// httpServer.on = (event: any, listener: any) => {
+//   if (event === 'request') return httpServer
+//   return _on.call(httpServer, event, listener)
+// }
 
 const loguxServer: BaseServer = new Server(
   Server.loadOptions(process, {
     subprotocol: '1.0.0',
     supports: '1.x',
-    root: __dirname
+    root: import.meta.url,
+    server: httpServer
   })
 )
 
@@ -261,125 +267,12 @@ loguxServer.type('chat/create', {
     await createChat(ctx, action, meta, loguxServer)
   }
 })
-
-server.register(fastifyCors, {
-  origin: '*'
+const html = fs.readFileSync('./client/dist/index.html')
+loguxServer.http((req, res) => {
+  console.log(req)
+  res.writeHead(200, {"Content-Type": "text/html"})
+  res.write(html)
+  res.end()
 })
-server.register(require('fastify-static'), {
-  root: path.join(__dirname, '../client/dist'),
-  wildcard: false,
-})
 
-
-server.get(
-    '*',
-    (
-        request: FastifyRequest,
-        reply: FastifyReply<http.Server>
-    ) => {
-      // @ts-ignore
-      return reply.sendFile('index.html')
-    }
-)
-// server.post(
-//   '/api/login',
-//   async (
-//     request:  FastifyRequest<{
-//       Body: {
-//         username: string,
-//         password: string,
-//       },
-//     }>,
-//     reply: FastifyReply<http.Server>
-//   ) => {
-//     return await Login(request, reply);
-//   }
-// )
-// server.post(
-//   '/api/register',
-//   async (
-//     request:  FastifyRequest<{
-//       Body: {
-//         username: string,
-//         password: string,
-//         pub_key: string,
-//       },
-//     }>,
-//     reply: FastifyReply<http.Server>
-//   ) => {
-//     await Register(request, reply)
-//   }
-// )
-// server.post(
-//   '/api/users/getKey',
-//   async (
-//     request:  FastifyRequest<{
-//       Body: {
-//         user_id: string
-//       },
-//     }>,
-//     reply: FastifyReply<http.Server>
-//   ) => {
-//     await getKey(request, reply)
-//   }
-// )
-// server.post(
-//   '/api/users/search',
-//   async (
-//     request:  FastifyRequest<{
-//       Body: {
-//         query: string
-//       },
-//     }>,
-//     reply: FastifyReply<http.Server>
-//   ) => {
-//     await searchUsers(request, reply)
-//   }
-// )
-// server.post(
-//   '/api/checkAuth',
-//   async (
-//     request:  FastifyRequest<{
-//       Body: {
-//         token: string
-//       },
-//     }>,
-//     reply: FastifyReply<http.Server>
-//   ) => {
-//     await checkAuth(request, reply)
-//   }
-// )
-// server.post(
-//   '/api/users/getInfo',
-//   async (
-//     request:  FastifyRequest<{
-//       Body: {
-//         user_id: string
-//       },
-//     }>,
-//     reply: FastifyReply<http.Server>
-//   ) => {
-//     await getUserInfo(request, reply)
-//   }
-// )
-// server.post(
-//   '/api/chat/create',
-//   async (
-//     request:  FastifyRequest<{
-//       Body: {
-//         user_id: string
-//       },
-//     }>,
-//     reply: FastifyReply<http.Server>
-//   ) => {
-//     await createChat(request, reply)
-//   }
-// )
-server.listen(port, (err, address) => {
-  if (err) {
-    console.error(err)
-    process.exit(1)
-  }
-  console.log(`Server listening at ${address}`)
-})
 loguxServer.listen()

@@ -1,10 +1,11 @@
 import bcrypt from 'bcrypt'
-import { Model, DataTypes } from 'sequelize'
+import seq from 'sequelize'
+const {DataTypes} = seq
 import jwt from 'jsonwebtoken'
-import * as config from '../config.json'
-import sequelize from '../lib/db_connect'
-import Chat from './Chat.model'
-class User extends Model {
+import config from '../config.json'
+import sequelize from '../lib/db_connect.js'
+import Chat from './Chat.model.js'
+class User extends seq.Model {
   username!: string
   password!: string
   notified!: boolean

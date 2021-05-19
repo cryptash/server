@@ -1,25 +1,21 @@
-import {
-  Association,
+import seq from 'sequelize'
+const {
   DataTypes,
-  HasManyAddAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManyHasAssociationMixin,
-  Model
-} from 'sequelize'
-import sequelize from '../lib/db_connect'
-import User from './User.model'
-import Message from './Message.model'
+} = seq
+import sequelize from '../lib/db_connect.js'
+import User from './User.model.js'
+import Message from './Message.model.js'
 
-class Chat extends Model {
+class Chat extends seq.Model {
   chat_id!: string
   users!: Array<string> | string
   messageAt!: Date
   messages!: Array<Message>
-  public getMessages!: HasManyGetAssociationsMixin<Message>
-  public addMessages!: HasManyAddAssociationMixin<Message, number>
-  public hasMessages!: HasManyHasAssociationMixin<Message, number>
+  public getMessages!: seq.HasManyGetAssociationsMixin<Message>
+  public addMessages!: seq.HasManyAddAssociationMixin<Message, number>
+  public hasMessages!: seq.HasManyHasAssociationMixin<Message, number>
   public static associations: {
-    projects: Association<Chat, Message>
+    projects: seq.Association<Chat, Message>
   }
   public loadMessages!: (pg: number) => Promise<Message[]>
 }
