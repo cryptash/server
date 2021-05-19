@@ -30,11 +30,11 @@ app.get('*', function (_, response) {
 
 const httpServer = app.listen(port)
 
-// const _on = httpServer.on
-// httpServer.on = (event: any, listener: any) => {
-//   if (event === 'request') return httpServer
-//   return _on.call(httpServer, event, listener)
-// }
+const _on = httpServer.on
+httpServer.on = (event: any, listener: any) => {
+  if (event === 'request') return httpServer
+  return _on.call(httpServer, event, listener)
+}
 
 const loguxServer: BaseServer = new Server(
   Server.loadOptions(process, {
@@ -267,12 +267,12 @@ loguxServer.type('chat/create', {
     await createChat(ctx, action, meta, loguxServer)
   }
 })
-const html = fs.readFileSync('./client/dist/index.html')
-loguxServer.http((req, res) => {
-  console.log(req)
-  res.writeHead(200, {"Content-Type": "text/html"})
-  res.write(html)
-  res.end()
-})
+// const html = fs.readFileSync('./client/dist/index.html')
+// loguxServer.http((req, res) => {
+//   console.log(req)
+//   res.writeHead(200, {"Content-Type": "text/html"})
+//   res.write(html)
+//   res.end()
+// })
 
 loguxServer.listen()
