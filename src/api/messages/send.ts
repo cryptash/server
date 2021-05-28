@@ -1,15 +1,18 @@
 import { nanoid } from 'nanoid'
-import {BaseServer, Context, ServerMeta} from "@logux/server";
+import { BaseServer, Context, ServerMeta } from '@logux/server'
 import Chat from '../../models/Chat.model.js'
 import MessageModel from '../../models/Message.model.js'
 
 const SendMessage = async (
   ctx: Context,
-  action:{
-    type: 'chat/messages/send',
+  action: {
+    type: 'chat/messages/send'
     payload: {
-      content: string, chat_id: string, from: string
-    }},
+      content: string
+      chat_id: string
+      from: string
+    }
+  },
   meta: ServerMeta,
   server: BaseServer
 ) => {
@@ -34,7 +37,7 @@ const SendMessage = async (
   if (typeof chat.users === 'string') {
     console.log()
   }
-  if (typeof users !== "string") {
+  if (typeof users !== 'string') {
     const msg = new MessageModel({
       chat_id: chat?.chat_id,
       from: ctx.userId,
@@ -59,9 +62,15 @@ const SendMessage = async (
       console.log('msg')
       console.log(e)
     }
-    server.log.add({type: 'chat/message/create', payload: msg}, {users: [msg.from, msg.to]})
-    return ctx.sendBack({type: 'chat/message/setId', payload: {id: msg.message_id, chat_id: action.payload.chat_id}})
+    ctx.sendBack({
+      type: 'chat/message/setId',
+      payload: { id: msg.message_id, chat_id: action.payload.chat_id }
+    })
+    server.log.add(
+      { type: 'chat/message/create', payload: msg },
+      { users: [msg.from, msg.to] }
+    )
+    return
   }
-
 }
 export default SendMessage

@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt'
 import seq from 'sequelize'
-const {DataTypes} = seq
+const { DataTypes } = seq
 import jwt from 'jsonwebtoken'
 import config from '../config.json'
 import sequelize from '../lib/db_connect.js'

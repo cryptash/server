@@ -1,21 +1,25 @@
-import seq from "sequelize";
-import {BaseServer, ServerMeta} from "@logux/server";
-import Chat from "../../models/Chat.model.js";
-import User from "../../models/User.model.js";
-
+import seq from 'sequelize'
+import { BaseServer, ServerMeta } from '@logux/server'
+import Chat from '../../models/Chat.model.js'
+import User from '../../models/User.model.js'
 
 interface Message {
-  content: string,
-  fromMe: boolean,
-  date: Date,
-  read: boolean,
+  content: string
+  fromMe: boolean
+  date: Date
+  read: boolean
   message_id: string
 }
-export const getMessages = async (ctx: any, action: any, meta: ServerMeta, server: BaseServer) => {
+export const getMessages = async (
+  ctx: any,
+  action: any,
+  meta: ServerMeta,
+  server: BaseServer
+) => {
   const id = ctx.params ? ctx.params.id : action.payload.chat_id
   const chat = await Chat.findOne({
     where: {
-      chat_id: id,
+      chat_id: id
     },
     include: [
       {
@@ -28,7 +32,9 @@ export const getMessages = async (ctx: any, action: any, meta: ServerMeta, serve
       }
     ]
   })
-  const messages = await chat?.loadMessages(action.payload ? action.payload.pg : 0)
+  const messages = await chat?.loadMessages(
+    action.payload ? action.payload.pg : 0
+  )
   messages?.reverse()
   const result: {
     statusCode: number
@@ -43,9 +49,9 @@ export const getMessages = async (ctx: any, action: any, meta: ServerMeta, serve
     messages: []
   }
   if (!messages) {
-    return ctx.sendBack({type: 'chat/load_messages/done', payload: result})
+    return ctx.sendBack({ type: 'chat/load_messages/done', payload: result })
   }
-  messages.forEach(msg => {
+  messages.forEach((msg) => {
     result.messages.push({
       //@ts-ignore
       content: msg.content,
@@ -55,5 +61,5 @@ export const getMessages = async (ctx: any, action: any, meta: ServerMeta, serve
       message_id: msg.message_id
     })
   })
-  return ctx.sendBack({type: 'chat/load_messages/done', payload: result})
+  return ctx.sendBack({ type: 'chat/load_messages/done', payload: result })
 }

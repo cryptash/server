@@ -1,7 +1,5 @@
 import seq from 'sequelize'
-const {
-  DataTypes,
-} = seq
+const { DataTypes } = seq
 import sequelize from '../lib/db_connect.js'
 import User from './User.model.js'
 import Message from './Message.model.js'
@@ -27,11 +25,11 @@ Chat.init(
   },
   { tableName: 'Chats', sequelize }
 )
-Chat.prototype.loadMessages = async function(pg){
+Chat.prototype.loadMessages = async function (pg) {
   return await this.getMessages({
     limit: 50,
     offset: pg * 50,
-    order: [['createdAt', 'DESC']],
+    order: [['createdAt', 'DESC']]
   })
 }
 // Chat.hasMany(Message)

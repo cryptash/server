@@ -1,8 +1,13 @@
-import {BaseServer, Context, ServerMeta} from "@logux/server";
+import { BaseServer, Context, ServerMeta } from '@logux/server'
 import Chat from '../../models/Chat.model.js'
 import MessageModel from '../../models/Message.model.js'
 
-const markAsRead = async (ctx: Context, action: any, meta: ServerMeta, server: BaseServer) => {
+const markAsRead = async (
+  ctx: Context,
+  action: any,
+  meta: ServerMeta,
+  server: BaseServer
+) => {
   const chat = await Chat.findOne({
     where: {
       chat_id: action.payload.chat_id
@@ -24,16 +29,17 @@ const markAsRead = async (ctx: Context, action: any, meta: ServerMeta, server: B
   if (typeof chat.users === 'string') {
     console.log()
   }
-  if (typeof users !== "string" && messages) {
-    const msg = messages.filter(x => x.message_id === action.payload.message_id)[0]
+  if (typeof users !== 'string' && messages) {
+    const msg = messages.filter(
+      (x) => x.message_id === action.payload.message_id
+    )[0]
     if (msg.read) {
-        return
+      return
     }
-    if (msg.to === ctx.userId){
-        msg.read = true
-    }
-    else {
-        return
+    if (msg.to === ctx.userId) {
+      msg.read = true
+    } else {
+      return
     }
     // const secondUser = users.filter((x: string) => x !== token.user_id)[0]
     console.log(msg)
@@ -45,6 +51,5 @@ const markAsRead = async (ctx: Context, action: any, meta: ServerMeta, server: B
     }
     return msg
   }
-
 }
 export default markAsRead

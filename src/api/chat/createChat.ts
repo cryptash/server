@@ -1,16 +1,17 @@
-import {nanoid} from 'nanoid'
-import {BaseServer, Context, ServerMeta} from "@logux/server";
-import seq from "sequelize";
+import { nanoid } from 'nanoid'
+import { BaseServer, Context, ServerMeta } from '@logux/server'
+import seq from 'sequelize'
 import Chat from '../../models/Chat.model.js'
 import User from '../../models/User.model.js'
 
 const createChat = async (
   ctx: Context,
-  action:{
-    type: 'chat/create',
+  action: {
+    type: 'chat/create'
     payload: {
       user_id: string
-    }},
+    }
+  },
   meta: ServerMeta,
   server: BaseServer
 ) => {
@@ -20,7 +21,7 @@ const createChat = async (
   }
   const isChat = await Chat.findOne({
     where: {
-      users: {[seq.Op.contains]: [action.payload.user_id,ctx.userId]},
+      users: { [seq.Op.contains]: [action.payload.user_id, ctx.userId] }
     }
   })
   if (isChat) {
@@ -51,9 +52,12 @@ const createChat = async (
   } catch (e) {
     if (e) return console.log(e)
   }
-  ctx.sendBack({type: 'chat/create/done', payload: {
-    chat_id: chat.chat_id
-  }})
+  ctx.sendBack({
+    type: 'chat/create/done',
+    payload: {
+      chat_id: chat.chat_id
+    }
+  })
   return
 }
 export default createChat

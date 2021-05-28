@@ -5,18 +5,18 @@ import SendMessage from './api/messages/send.js'
 import searchUsers from './api/searchUsers.js'
 import getUserInfo from './logux/User/GetInfo.js'
 import createChat from './api/chat/createChat.js'
-import {getMessages} from "./logux/Chat/getMessages.js"
+import { getMessages } from './logux/Chat/getMessages.js'
 import path from 'path'
 import express from 'express'
-import markAsRead from './api/messages/markAsRead.js';
+import markAsRead from './api/messages/markAsRead.js'
 import { Server } from '@logux/server'
 import type { BaseServer } from '@logux/server'
-import {LoginLogux} from "./logux/login.js";
-import {Check} from "./logux/User/Check.js";
-import Chat from "./models/Chat.model.js";
-import User from "./models/User.model.js";
-import {RegisterLogux} from "./logux/register.js";
-import * as fs from "fs";
+import { LoginLogux } from './logux/login.js'
+import { Check } from './logux/User/Check.js'
+import Chat from './models/Chat.model.js'
+import User from './models/User.model.js'
+import { RegisterLogux } from './logux/register.js'
+import * as fs from 'fs'
 connection.sync()
 const port: number = config.port || 8080
 
@@ -61,71 +61,87 @@ loguxServer.auth(({ userId, token }) => {
 })
 
 loguxServer.type('login', {
-  async access (ctx) {
+  async access(ctx) {
     console.log('login')
     return ctx.userId === 'anonymous'
   },
-  async process (ctx, action: {
-    type: 'login',
-    username: string,
-    password: string,
-  }, meta) {
+  async process(
+    ctx,
+    action: {
+      type: 'login'
+      username: string
+      password: string
+    },
+    meta
+  ) {
     await LoginLogux(ctx, action, meta, loguxServer)
   }
 })
 loguxServer.type('register', {
-  async access (ctx, action: {
-    type: 'register',
-    username: string,
-    password: string,
-    pub_key: string,
-    private_key: string
-  }, meta) {
+  async access(
+    ctx,
+    action: {
+      type: 'register'
+      username: string
+      password: string
+      pub_key: string
+      private_key: string
+    },
+    meta
+  ) {
     console.log('register')
     return ctx.userId === 'anonymous'
   },
-  async process (ctx, action: {
-    type: 'register',
-    username: string,
-    password: string,
-    pub_key: string,
-    private_key: string
-  }, meta) {
+  async process(
+    ctx,
+    action: {
+      type: 'register'
+      username: string
+      password: string
+      pub_key: string
+      private_key: string
+    },
+    meta
+  ) {
     await RegisterLogux(ctx, action, meta, loguxServer)
   }
 })
 loguxServer.type('user/check', {
-  async access (ctx) {
+  async access(ctx) {
     return true
   },
-  async process (ctx, action: {
-    type: 'user/check',
-    token: string
-  }, meta) {
+  async process(
+    ctx,
+    action: {
+      type: 'user/check'
+      token: string
+    },
+    meta
+  ) {
     await Check(ctx, action, meta, loguxServer)
   }
 })
 loguxServer.channel('user/:id', {
-  access (ctx, action, meta) {
+  access(ctx, action, meta) {
     const params: any = ctx.params
     return params.id === ctx.userId
   },
-  async load (ctx, action, meta) {
+  async load(ctx, action, meta) {
     await getUserInfo(ctx, action, meta, loguxServer)
   }
 })
 loguxServer.channel('chat/:id', {
-  async access (ctx, action, meta) {
+  async access(ctx, action, meta) {
     const params: any = ctx.params
     const chat = await Chat.findOne({
       where: {
-        chat_id: params.id,
+        chat_id: params.id
       },
       include: [
         {
           model: User,
           required: true,
-          attributes: ['pub_key', 'user_id', 'picture_url', 'username'],
+          attributes: ['pub_key', 'user_id', 'picture_url', 'username']
         }
       ]
     })
@@ -136,25 +152,32 @@ loguxServer.channel('chat/:id', {
     }
     return false
   },
-  async load (ctx, action, meta) {
+  async load(ctx, action, meta) {
     await getMessages(ctx, action, meta, loguxServer)
   }
 })
 
 loguxServer.type('chat/messages/get', {
-  async access (ctx, action:{
-    type: 'chat/messages/get',  payload: {
-      chat_id: string, pg: number
-    }}, meta) {
+  async access(
+    ctx,
+    action: {
+      type: 'chat/messages/get'
+      payload: {
+        chat_id: string
+        pg: number
+      }
+    },
+    meta
+  ) {
     const chat = await Chat.findOne({
       where: {
-        chat_id: action.payload.chat_id,
+        chat_id: action.payload.chat_id
       },
       include: [
         {
           model: User,
           required: true,
-          attributes: ['pub_key', 'user_id', 'picture_url', 'username'],
+          attributes: ['pub_key', 'user_id', 'picture_url', 'username']
         }
       ]
     })
@@ -165,27 +188,41 @@ loguxServer.type('chat/messages/get', {
     }
     return false
   },
-  async process (ctx, action:{
-    type: 'chat/messages/get',  payload: {
-      chat_id: string, pg: number
-    }}, meta) {
+  async process(
+    ctx,
+    action: {
+      type: 'chat/messages/get'
+      payload: {
+        chat_id: string
+        pg: number
+      }
+    },
+    meta
+  ) {
     await getMessages(ctx, action, meta, loguxServer)
   }
 })
 loguxServer.type('chat/message/read', {
-  async access (ctx, action:{
-    type: 'chat/message/read',  payload: {
-      chat_id: string, message_id: string
-    }}, meta) {
+  async access(
+    ctx,
+    action: {
+      type: 'chat/message/read'
+      payload: {
+        chat_id: string
+        message_id: string
+      }
+    },
+    meta
+  ) {
     const chat = await Chat.findOne({
       where: {
-        chat_id: action.payload.chat_id,
+        chat_id: action.payload.chat_id
       },
       include: [
         {
           model: User,
           required: true,
-          attributes: ['pub_key', 'user_id', 'picture_url', 'username'],
+          attributes: ['pub_key', 'user_id', 'picture_url', 'username']
         }
       ]
     })
@@ -196,33 +233,55 @@ loguxServer.type('chat/message/read', {
     }
     return false
   },
-  async process (ctx, action:{
-    type: 'chat/message/read',  payload: {
-      chat_id: string, message_id: string
-    }}, meta) {
+  async process(
+    ctx,
+    action: {
+      type: 'chat/message/read'
+      payload: {
+        chat_id: string
+        message_id: string
+      }
+    },
+    meta
+  ) {
     await markAsRead(ctx, action, meta, loguxServer)
   },
-  async resend (ctx, action:{
-    type: 'chat/message/read',  payload: {
-      chat_id: string, message_id: string
-    }}, meta) {
-    return {channel: `chat/${action.payload.chat_id}`}
+  async resend(
+    ctx,
+    action: {
+      type: 'chat/message/read'
+      payload: {
+        chat_id: string
+        message_id: string
+      }
+    },
+    meta
+  ) {
+    return { channel: `chat/${action.payload.chat_id}` }
   }
 })
 loguxServer.type('chat/messages/send', {
-  async access (ctx, action:{
-    type: 'chat/messages/send',  payload: {
-    content: string, chat_id: string, from: string
-  }}, meta) {
+  async access(
+    ctx,
+    action: {
+      type: 'chat/messages/send'
+      payload: {
+        content: string
+        chat_id: string
+        from: string
+      }
+    },
+    meta
+  ) {
     const chat = await Chat.findOne({
       where: {
-        chat_id: action.payload.chat_id,
+        chat_id: action.payload.chat_id
       },
       include: [
         {
           model: User,
           required: true,
-          attributes: ['pub_key', 'user_id', 'picture_url', 'username'],
+          attributes: ['pub_key', 'user_id', 'picture_url', 'username']
         }
       ]
     })
@@ -233,37 +292,53 @@ loguxServer.type('chat/messages/send', {
     }
     return false
   },
-  async process (ctx, action:{
-    type: 'chat/messages/send',  payload: {
-      content: string, chat_id: string, from: string
-    }}, meta) {
+  async process(
+    ctx,
+    action: {
+      type: 'chat/messages/send'
+      payload: {
+        content: string
+        chat_id: string
+        from: string
+      }
+    },
+    meta
+  ) {
     await SendMessage(ctx, action, meta, loguxServer)
-  },
+  }
 })
 
 loguxServer.type('users/search', {
-  async access (ctx) {
+  async access(ctx) {
     return ctx.userId !== 'anonymous'
   },
-  async process (ctx, action: {
-    type: 'users/search',
-    payload: {
-      query: string
+  async process(
+    ctx,
+    action: {
+      type: 'users/search'
+      payload: {
+        query: string
+      }
     },
-  }, meta) {
+    meta
+  ) {
     await searchUsers(ctx, action, meta, loguxServer)
   }
 })
 loguxServer.type('chat/create', {
-  async access (ctx) {
+  async access(ctx) {
     return ctx.userId !== 'anonymous'
   },
-  async process (ctx, action: {
-    type: 'chat/create',
-    payload: {
-      user_id: string
+  async process(
+    ctx,
+    action: {
+      type: 'chat/create'
+      payload: {
+        user_id: string
+      }
     },
-  }, meta) {
+    meta
+  ) {
     await createChat(ctx, action, meta, loguxServer)
   }
 })

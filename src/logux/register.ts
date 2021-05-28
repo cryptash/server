@@ -1,17 +1,26 @@
-import {BaseServer, Context, ServerMeta} from "@logux/server";
-import bcrypt from "bcrypt";
-import {nanoid} from "nanoid";
+import { BaseServer, Context, ServerMeta } from '@logux/server'
+import bcrypt from 'bcrypt'
+import { nanoid } from 'nanoid'
 import User from '../models/User.model.js'
-import {randomGradient} from "../lib/randomGradient.js";
-const RegisterLogux = async (ctx: Context, action: {
-  type: 'register',
-  username: string,
-  password: string,
-  pub_key: string,
-  private_key: string
-}, meta: ServerMeta, server: BaseServer) => {
+import { randomGradient } from '../lib/randomGradient.js'
+const RegisterLogux = async (
+  ctx: Context,
+  action: {
+    type: 'register'
+    username: string
+    password: string
+    pub_key: string
+    private_key: string
+  },
+  meta: ServerMeta,
+  server: BaseServer
+) => {
   let pass_regexp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,31}$/ // 8 to 31 characters which contain at least one lowercase letter, one uppercase letter, one numeric digit, and one special character
-  if (!action.password.match(pass_regexp) || !action.username || action.username.length < 3) {
+  if (
+    !action.password.match(pass_regexp) ||
+    !action.username ||
+    action.username.length < 3
+  ) {
     server.undo(action, meta, "Password or Username doesn't meet requirements")
     return
   }
@@ -36,7 +45,11 @@ const RegisterLogux = async (ctx: Context, action: {
   } catch (e) {
     if (e) return console.log(e)
   }
-  ctx.sendBack({ type: 'register/done', ...user.toAuthJSON(), user_id: user.user_id })
+  ctx.sendBack({
+    type: 'register/done',
+    ...user.toAuthJSON(),
+    user_id: user.user_id
+  })
   return
 }
-export {RegisterLogux}
+export { RegisterLogux }

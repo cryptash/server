@@ -1,14 +1,15 @@
 import sequelize from 'sequelize'
-import {BaseServer, Context, ServerMeta} from "@logux/server";
+import { BaseServer, Context, ServerMeta } from '@logux/server'
 import User from '../models/User.model.js'
 
 const searchUsers = async (
   ctx: Context,
-  action:{
-    type: 'users/search',
+  action: {
+    type: 'users/search'
     payload: {
       query: string
-    }},
+    }
+  },
   meta: ServerMeta,
   server: BaseServer
 ) => {

@@ -1,5 +1,5 @@
 import seq from 'sequelize'
-const {DataTypes} = seq
+const { DataTypes } = seq
 import sequelize from '../lib/db_connect.js'
 import Chat from './Chat.model.js'
 class Message extends seq.Model {
