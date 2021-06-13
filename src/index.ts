@@ -5,7 +5,7 @@ import SendMessage from './api/messages/send.js'
 import searchUsers from './api/searchUsers.js'
 import getUserInfo from './logux/User/GetInfo.js'
 import createChat from './api/chat/createChat.js'
-import { getMessages } from './logux/Chat/getMessages.js'
+import { getMessages } from './api/chat/getMessages.js'
 import path from 'path'
 import express from 'express'
 import markAsRead from './api/messages/markAsRead.js'
@@ -16,7 +16,7 @@ import { Check } from './logux/User/Check.js'
 import Chat from './models/Chat.model.js'
 import User from './models/User.model.js'
 import { RegisterLogux } from './logux/register.js'
-import * as fs from 'fs'
+import { getOnlineUsers } from './api/user/getOnlineUsers.js'
 connection.sync()
 const port: number = config.port || 8080
 
@@ -342,12 +342,20 @@ loguxServer.type('chat/create', {
     await createChat(ctx, action, meta, loguxServer)
   }
 })
-// const html = fs.readFileSync('./client/dist/index.html')
-// loguxServer.http((req, res) => {
-//   console.log(req)
-//   res.writeHead(200, {"Content-Type": "text/html"})
-//   res.write(html)
-//   res.end()
-// })
+
+loguxServer.type('users/getOnline', {
+  async access(ctx) {
+    return ctx.userId !== 'anonymous'
+  },
+  async process(
+    ctx,
+    action: {
+      type: 'users/getOnline'
+    },
+    meta
+  ) {
+    await getOnlineUsers(ctx, action, meta, loguxServer)
+  }
+})
 
 loguxServer.listen()

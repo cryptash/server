@@ -2,6 +2,7 @@ import seq from 'sequelize'
 import { BaseServer, ServerMeta } from '@logux/server'
 import Chat from '../../models/Chat.model.js'
 import User from '../../models/User.model.js'
+import { checkIfOnline } from '../user/checkIfOnline.js'
 
 interface Message {
   content: string
@@ -41,12 +42,18 @@ export const getMessages = async (
     action: string
     messages: Message[]
     pub_key: string
+    username: string
+    picture: string
+    status: "ONLINE" | "OFFLINE"
   } = {
     statusCode: 200,
     action: 'get_messages',
     //@ts-ignore
     pub_key: chat['Users'][0].pub_key,
-    messages: []
+    messages: [],
+    username: chat['Users'][0].username,
+    picture: chat['Users'][0].picture_url,
+    status: await checkIfOnline(server, chat['Users'][0].user_id) ? 'ONLINE' : 'OFFLINE'
   }
   if (!messages) {
     return ctx.sendBack({ type: 'chat/load_messages/done', payload: result })
