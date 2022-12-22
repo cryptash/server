@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
+import redis from './lib/redis.js'
 import connection from './lib/db_connect.js'
-import config from './config.json'
+import config from './config.json' assert { type: 'json' }
 import SendMessage from './api/messages/send.js'
 import searchUsers from './api/searchUsers.js'
 import getUserInfo from './logux/User/GetInfo.js'
@@ -17,6 +18,10 @@ import Chat from './models/Chat.model.js'
 import User from './models/User.model.js'
 import { RegisterLogux } from './logux/register.js'
 import { getOnlineUsers } from './api/user/getOnlineUsers.js'
+
+// redis.connect()
+// redis.on('error', (err) => console.log('Redis Client Error', err))
+
 connection.sync()
 const port: number = config.port || 8080
 

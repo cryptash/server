@@ -1,7 +1,7 @@
 import { BaseServer, Context, ServerMeta } from '@logux/server'
 import jwt from 'jsonwebtoken'
 import User from '../../models/User.model.js'
-import config from '../../config.json'
+import config from '../../config.json' assert { type: 'json' }
 const Check = async (
   ctx: Context,
   action: {

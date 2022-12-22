@@ -15,7 +15,8 @@ const RegisterLogux = async (
   meta: ServerMeta,
   server: BaseServer
 ) => {
-  let pass_regexp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,31}$/ // 8 to 31 characters which contain at least one lowercase letter, one uppercase letter, one numeric digit, and one special character
+  let pass_regexp =
+    /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,31}$/ // 8 to 31 characters which contain at least one lowercase letter, one uppercase letter, one numeric digit, and one special character
   if (
     !action.password.match(pass_regexp) ||
     !action.username ||

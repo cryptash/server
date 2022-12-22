@@ -6,4 +6,4 @@ const checkIfOnline = async (server: BaseServer, user_id: string) => {
   }
   return false
 }
-export {checkIfOnline}
+export { checkIfOnline }

@@ -44,7 +44,7 @@ export const getMessages = async (
     pub_key: string
     username: string
     picture: string
-    status: "ONLINE" | "OFFLINE"
+    status: 'ONLINE' | 'OFFLINE'
   } = {
     statusCode: 200,
     action: 'get_messages',
@@ -53,7 +53,9 @@ export const getMessages = async (
     messages: [],
     username: chat['Users'][0].username,
     picture: chat['Users'][0].picture_url,
-    status: await checkIfOnline(server, chat['Users'][0].user_id) ? 'ONLINE' : 'OFFLINE'
+    status: (await checkIfOnline(server, chat['Users'][0].user_id))
+      ? 'ONLINE'
+      : 'OFFLINE'
   }
   if (!messages) {
     return ctx.sendBack({ type: 'chat/load_messages/done', payload: result })

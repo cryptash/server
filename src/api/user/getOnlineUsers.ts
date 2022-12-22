@@ -42,17 +42,16 @@ const getOnlineUsers = async (
     ]
   })
   const result: Array<{
-    user_id: string,
+    user_id: string
     status: 'OFFLINE' | 'ONLINE'
   }> = []
-  user['Chats'].forEach(chat => {
+  user['Chats'].forEach((chat) => {
     if (connectedUserIds.find(chat['Users'][0].user_id)) {
       result.push({
         user_id: chat['Users'][0].user_id,
         status: 'ONLINE'
       })
-    }
-    else {
+    } else {
       result.push({
         user_id: chat['Users'][0].user_id,
         status: 'OFFLINE'
@@ -67,4 +66,4 @@ const getOnlineUsers = async (
   })
 }
 
-export {getOnlineUsers}
+export { getOnlineUsers }
