@@ -39,7 +39,7 @@
     "node-rsa": "^1.1.1",
     "pg": "^8.8.0",
     "redis": "^4.5.1",
-    "sequelize": "^6.28.0",
+    "sequelize": "^6.28.2",
     "snowflake-id": "^1.1.0",
     "typescript-fsa": "^3.0.0",
     "ws": "^7.5.9"
